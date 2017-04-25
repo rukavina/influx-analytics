@@ -1,0 +1,24 @@
+{
+    "name": "voribind/influx-analytics",
+    "description": "Analytics package for influx data",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sasa Rajkovic",
+            "email": "sasa.rajkovic34@gmail.com"
+        }
+    ],
+    "type": "project",
+    "require": {
+        "php": ">=5.4",
+        "influxdb/influxdb-php": "1.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "6.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vorbind\\InfluxAnalytics\\": "src/"
+        }
+    }
+} 
