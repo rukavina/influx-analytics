@@ -18,51 +18,53 @@ class ClientTotalTest extends TestCase {
   public function providerTotalByDateData() {
       return [          
           //total    
-          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", "2017-03-04 01:12:12", "daily"],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", "2017-03-04T01:12:12Z", json_encode(array("status"=>"send"))],
       ];
   }
 
   public function providerTotalData() {
       return [          
           //total    
-          ["d354fe67-87f2-4438-959f-65fde4622044", "sms"],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", json_encode(array())],
       ];
   }
 
   /**
    * @dataProvider providerTotalByDateData 
-   * //test
+   * @test
    */
-  public function getTotalByDate($service, $metrix, $date, $granularity) {
-    // $inputData = [
-    //   "serviceId" => $service,
-    //   "metrix"  => $metrix,
-    //   "date"   => $date,
-    //   "granularity"   => $granularity,
-    // ];
-    // $factory = new ClientFactory();
-    // $client = $factory->create(self::$db, 'total', $inputData);
-    // $total = $client->getTotal();
+  public function getTotalByDate($service, $metrix, $date, $tags) {
+    $inputData = [
+      "serviceId" => $service,
+      "metrix"  => $metrix,
+      "date"   => $date,
+      "tags"   => json_decode($tags, true)
+    ];
+    $factory = new ClientFactory();
+    $client = $factory->create(self::$db, 'total', $inputData);
+    $total = $client->getTotal();
 
-    // $this->assertTrue(is_integer($total));
-    // $this->assertEquals(36, $total);
+    $this->assertTrue(is_integer($total));
+    //$this->assertEquals(36, $total);
+    $this->assertGreaterThan(0, $total);
   }
   
   /**
    * @dataProvider providerTotalData 
-   * //test
+   * @test
    */
-  public function getTotal($service, $metrix) {
-    // $inputData = [
-    //   "serviceId" => $service,
-    //   "metrix"  => $metrix     
-    // ];
-    // $factory = new ClientFactory();
-    // $client = $factory->create(self::$db, 'total', $inputData);
-    // $total = $client->getTotal();
+  public function getTotal($service, $metrix, $tags) {
+    $inputData = [
+      "serviceId" => $service,
+      "metrix"  => $metrix,    
+      "tags"   => json_decode($tags, true),
+    ];
+    $factory = new ClientFactory();
+    $client = $factory->create(self::$db, 'total', $inputData);
+    $total = $client->getTotal();
 
-    // $this->assertTrue(is_integer($total));
-    // $this->assertEquals(2, $total);
+    $this->assertTrue(is_integer($total));
+    $this->assertGreaterThan(0, $total);
   }  
   
 }

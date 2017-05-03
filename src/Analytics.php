@@ -25,7 +25,7 @@ class Analytics implements AnalyticsInterface {
      * @param  array $tags       Tags
      * @param  string $utcDt     Datetime
      */
-    public function save($db, $serviceId, $metrix, $tags, $utcDt) {
+    public function save($db, $serviceId, $metrix, $tags, $utcDt, $value = 1) {
       	//curl -i -XPOST 'http://localhost:8086/write?db=news' --data-binary 'sms,status=send,creator=scheduled service=1234-1234-1234-1234 value=1 1434055562000000000'
 
     	$time = strtotime($utcDt); // Time precision has to be set to seconds!
@@ -36,8 +36,8 @@ class Analytics implements AnalyticsInterface {
 		$points = array(
 			new Point(
 				$metrix,
-				1, // value
-				$tags, // array('status' => 'send','creator' => 'scheduled')
+				$value, // value
+				$tags, // array('status' => 'send','type' => 'scheduled','campaign' => 'may')
 				array('service' => $serviceId),
 				$time
 			)
@@ -45,7 +45,7 @@ class Analytics implements AnalyticsInterface {
 
 		// we are writing unix timestamps, which have a second precision
 		$result = $db->writePoints($points, Database::PRECISION_SECONDS);
-		print_r($result);
+		//print_r($result);
       	return $result;
     }    
 }

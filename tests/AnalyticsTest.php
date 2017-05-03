@@ -25,22 +25,49 @@ class AnalyticsTest extends TestCase {
       $data = [];
       //january
       $data = $this->getMonthData("contact", $data, array(), "01");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'easysms'), "02");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','type' => 'easysms'), "02");
       //february
       $data = $this->getMonthData("contact", $data, array(), "02");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'easysms'), "02");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','type' => 'easysms'), "02");
       //mart
       $data = $this->getMonthData("contact", $data, array(), "03");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'easysms'), "03");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','type' => 'easysms'), "03");
       //april
       $data = $this->getMonthData("contact", $data, array(), "04");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'scheduled'), "04");
+      $data = $this->getMonthData(
+        "sms", 
+        $data, 
+        array(
+          'status' => 'send',
+          'type' => 'scheduled',
+          'campaign' => "april"
+        ),
+        "04"
+      );
       //may
       $data = $this->getMonthData("contact", $data, array(), "05");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'scheduled'), "04");
+      $data = $this->getMonthData(
+        "sms", 
+        $data, 
+        array(
+          'status' => 'send', 
+          'type' => 'scheduled', 
+          'campaign' => "may"
+        ),
+        "05"
+      );
       //jun
       $data = $this->getMonthData("contact", $data, array(), "06");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'scheduled'), "04");
+      $data = $this->getMonthData(
+        "sms", 
+        $data, 
+        array(
+          'status' => 'send',
+          'type' => 'scheduled', 
+          'campaign' => "jun"
+        ),
+        "06"
+      );
 
       return $data;
   }
