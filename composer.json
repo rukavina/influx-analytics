@@ -11,7 +11,7 @@
     "type": "project",
     "require": {
         "php": ">=5.4",
-        "influxdb/influxdb-php": "1.*"
+        "influxdb/influxdb-php": "dev-feature/guzzle5-6#7bd934eab5b759befcd94779bc576134aab9e219"    
     },
     "require-dev": {
         "phpunit/phpunit": "6.*"
