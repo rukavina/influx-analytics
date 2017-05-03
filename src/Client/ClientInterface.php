@@ -1,8 +1,8 @@
 <?php 
 
-namespace Vorbind\InfluxAnalytics\InfluxClient;
+namespace Vorbind\InfluxAnalytics\Client;
 
-interface InfluxClientInterface {
+interface ClientInterface {
 
 	public function getTotal();	
 

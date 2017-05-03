@@ -12,81 +12,52 @@ class AnalyticsTest extends TestCase {
     echo ">>> set up only once..";
     $conn = new Connection();
     self::$db = $conn->getDatabase("news");
-    self::$db->daily->drop();
-    self::$db->monthly->drop();
-  }
 
-  public function providerAllocate() {
-    $data = [];
-    //february
-    $data = $this->allocate("contact", $data, "02");
-    $data = $this->allocate("sms", $data, "02");
-    //mart
-    $data = $this->allocate("contact", $data, "03");
-    $data = $this->allocate("sms", $data, "03");
-    //april
-    $data = $this->allocate("contact", $data, "04");
-    $data = $this->allocate("sms", $data, "04");
-
-    return $data;
+    try {
+      self::$db->query(sprintf('drop measurement "%s"', "sms"));
+      self::$db->query(sprintf('drop measurement "%s"', "contact"));
+    } catch (Exception $e) {
+      print("Exception measurement not exist..");
+    }
   }
 
   public function providerData($data) {
       $data = [];
+      //january
+      $data = $this->getMonthData("contact", $data, array(), "01");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'easysms'), "02");
       //february
-      $data = $this->getMonthData("contact", $data, "02");
-      $data = $this->getMonthData("sms", $data, "02");
+      $data = $this->getMonthData("contact", $data, array(), "02");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'easysms'), "02");
       //mart
-      $data = $this->getMonthData("contact", $data, "03");
-      $data = $this->getMonthData("sms", $data, "03");
+      $data = $this->getMonthData("contact", $data, array(), "03");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'easysms'), "03");
       //april
-      $data = $this->getMonthData("contact", $data, "04");
-      $data = $this->getMonthData("sms", $data, "04");
+      $data = $this->getMonthData("contact", $data, array(), "04");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'scheduled'), "04");
+      //may
+      $data = $this->getMonthData("contact", $data, array(), "05");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'scheduled'), "04");
+      //jun
+      $data = $this->getMonthData("contact", $data, array(), "06");
+      $data = $this->getMonthData("sms", $data, array('status' => 'send','creator' => 'scheduled'), "04");
 
       return $data;
   }
   
   /**
-   * @test
-   * @dataProvider providerAllocate 
-   */
-  public function preallocate($service, $metrix, $utc) {
-    $analytics = new Analytics();
-    $analytics->preallocate(self::$db, $service, $metrix, $utc); 
-    $data = self::$db->daily->find();
-    $this->assertTrue(is_object($data));
-    $data = self::$db->monthly->find();
-    $this->assertTrue(is_object($data));
-  }
-  
-  /**
-   * @depends preallocate
    * @dataProvider providerData 
    * @test
    */
-  public function save($service, $metrix, $utc) {
+  public function save($service, $metrix, $tags, $utc) {
     $analytics = new Analytics();
-    $analytics->save(self::$db, $service, $metrix, $utc); 
-    $data = self::$db->news->find();
-    $this->assertTrue(is_object($data));
+    $data = $analytics->save(self::$db, $service, $metrix, json_decode($tags, true), $utc); 
+    $this->assertTrue($data);
   }
 
   //-------- helper methods --------//
   
-  protected function allocate($metrix, $data, $m) {
-    $i = 1;
-    // mart
-    while($i <= 31) {
-      $d = $i<10 ? "0" . $i : $i;
-      $item = ["d354fe67-87f2-4438-959f-65fde4622044", $metrix, "2017-$m-$d 00:00:01"];
-      $data[] = $item;
-      $i++;
-    }
-
-    return $data;  
-  }
-
-  protected function getMonthData($metrix, $data, $m) {
+  protected function getMonthData($metrix, $data, $tags, $m) {
     $limit = rand(10, 60);
     $i = 0;
     // mart
@@ -101,7 +72,7 @@ class AnalyticsTest extends TestCase {
       $mm = $mm < 10 ? "0" . $mm : $mm;
       $s = $s < 10 ? "0" . $s : $s;
 
-      $item = ["d354fe67-87f2-4438-959f-65fde4622044", $metrix, "2017-$m-$d $h:$mm:$s"];
+      $item = ["d354fe67-87f2-4438-959f-65fde4622044", $metrix, json_encode($tags), "2017-$m-$d $h:$mm:$s"];
       $data[] = $item;
       $i++;
     }
