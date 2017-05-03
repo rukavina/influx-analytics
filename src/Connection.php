@@ -20,7 +20,7 @@ class Connection {
     private $host;
     private $port;
 
-    public function __construct($host = 'localhost', $port = '8086') {
+    public function __construct($host = 'localhost', $port = '8186') {
     	$this->host = $host;
     	$this->port = $port;
     }
