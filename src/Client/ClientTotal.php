@@ -15,9 +15,6 @@ class ClientTotal implements ClientInterface {
 	protected $date;
 	protected $granularity;
 
-	CONST GRANULARITY_DAILY = 'daily';
-	CONST GRANULARITY_MONTHLY = 'monthly';
-	
 	public function __construct($db, $inputData) {
 		$this->db = $db;
 		$this->serviceId = isset($inputData["serviceId"]) ? $inputData["serviceId"] : null;

@@ -26,8 +26,7 @@ class ClientPeriodTest extends TestCase {
             "2017-06-30T00:12:12Z", 
             json_encode(array("status" => "send")),
             "weekly"
-          ],
-          //["d354fe67-87f2-4438-959f-65fde4622044", "sms", "20170401", "20170401","minute"],
+          ]
       ];
   }
 

@@ -19,8 +19,6 @@ class ClientPeriod implements ClientInterface {
 	CONST GRANULARITY_HOURLY = 'hourly';
 	CONST GRANULARITY_DAILY = 'daily';
 	CONST GRANULARITY_WEEKLY = 'weekly';
-	CONST GRANULARITY_MONTHLY = 'monthly';
-	CONST GRANULARITY_YEARLY = 'yearly';
 	
 	public function __construct($db, $inputData) {
 		$this->db = $db;
