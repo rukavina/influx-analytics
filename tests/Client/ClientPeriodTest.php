@@ -22,8 +22,24 @@ class ClientPeriodTest extends TestCase {
           [
             "d354fe67-87f2-4438-959f-65fde4622044", 
             "sms", 
-            "2017-01-01T00:00:00Z", 
-            "2017-06-30T00:12:12Z", 
+            "2017-06-01T00:00:00Z", 
+            "2017-06-02T23:59:59Z", 
+            json_encode(array("status" => "send")),
+            "hourly"
+          ],
+          [
+            "d354fe67-87f2-4438-959f-65fde4622044", 
+            "sms", 
+            "2017-06-01T00:00:00Z", 
+            "2017-06-02T23:59:59Z", 
+            json_encode(array("status" => "send")),
+            "daily"
+          ],
+          [
+            "d354fe67-87f2-4438-959f-65fde4622044", 
+            "sms", 
+            "2017-06-01T00:00:00Z", 
+            "2017-06-02T23:59:59Z", 
             json_encode(array("status" => "send")),
             "weekly"
           ]
@@ -36,6 +52,8 @@ class ClientPeriodTest extends TestCase {
           [
             "d354fe67-87f2-4438-959f-65fde4622044", 
             "sms",
+            "2017-06-01T00:00:00Z", 
+            "2017-06-02T23:59:59Z", 
             json_encode(array("status" => "send", "type" => "scheduled"))
           ],
       ];
@@ -67,10 +85,12 @@ class ClientPeriodTest extends TestCase {
    * @dataProvider providerTotalData 
    * @test
    */
-  public function getTotal($service, $metrix, $tags) {
+  public function getTotal($service, $metrix, $startDt, $endDt, $tags) {
     $inputData = [
       "serviceId" => $service,
       "metrix"  => $metrix,
+      "startDt"   => $startDt,
+      "endDt"   => $endDt,
       "tags" => json_decode($tags, true)
     ];
     $factory = new ClientFactory();

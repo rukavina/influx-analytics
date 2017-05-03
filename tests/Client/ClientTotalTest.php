@@ -47,6 +47,8 @@ class ClientTotalTest extends TestCase {
     $this->assertTrue(is_integer($total));
     //$this->assertEquals(36, $total);
     $this->assertGreaterThan(0, $total);
+    echo "TOTAL[$date]:";
+    var_dump($total);
   }
   
   /**
@@ -65,6 +67,8 @@ class ClientTotalTest extends TestCase {
 
     $this->assertTrue(is_integer($total));
     $this->assertGreaterThan(0, $total);
+    echo "TOTAL:";
+    var_dump($total);
   }  
   
 }

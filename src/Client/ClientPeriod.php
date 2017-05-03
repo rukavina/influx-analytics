@@ -69,6 +69,9 @@ class ClientPeriod implements ClientInterface {
 		$data = $query->getResultSet()
 	          ->getPoints();
 
+
+	    echo "Data:";      
+	    print_r($data);      
 		return $data;
 	}
 
@@ -80,6 +83,7 @@ class ClientPeriod implements ClientInterface {
 		$where = [];
 		
 		$where[] = "service='" . $this->serviceId . "'";
+		$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
 		foreach($this->tags as $key => $val) {
 			$where[] = "$key = '" . $val . "'";
 		}
@@ -92,7 +96,10 @@ class ClientPeriod implements ClientInterface {
 				->getResultSet();
 
 		$points = $results->getPoints();
-		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
+		$total = isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
+		echo "Total:";
+		var_dump($total);
+		return $total;
 	}
 
 }
