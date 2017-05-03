@@ -28,15 +28,15 @@ class Connection {
     public function getDatabase($name) {
 
       if (!isset($name)) {
-            throw InvalidArgumentException::invalidType('"db name" driver option', $name, 'string');
-        }
+        throw InvalidArgumentException::invalidType('"db name" driver option', $name, 'string');
+      }
 
       if (null == $this->client) {
-            $this->client = new \InfluxDB\Client($this->host, $this->port);
+        $this->client = new \InfluxDB\Client($this->host, $this->port);
       }
 
       if (!isset($this->dbs[$name])) {
-          $this->dbs[$name] = $this->client->selectDB($name);
+        $this->dbs[$name] = $this->client->selectDB($name);
       }
 
       return $this->dbs[$name];
