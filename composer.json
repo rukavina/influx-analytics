@@ -1,5 +1,5 @@
 {
-    "name": "voribind/influx-analytics",
+    "name": "vorbind/influx-analytics",
     "description": "Analytics package for influx data",
     "license": "MIT",
     "authors": [
