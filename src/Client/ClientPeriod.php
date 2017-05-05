@@ -76,7 +76,7 @@ class ClientPeriod implements ClientInterface {
 	}
 
 	/**
-	 * Get toal
+	 * Get total
 	 * @return int total
 	 */
 	public function getTotal() {
