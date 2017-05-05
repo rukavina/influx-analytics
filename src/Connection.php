@@ -20,9 +20,10 @@ class Connection {
     private $host;
     private $port;
 
+//    public function __construct($host = 'localhost', $port = '8088') {
     public function __construct($host = 'localhost', $port = '8186') {
-    	$this->host = $host;
-    	$this->port = $port;
+      $this->host = $host;
+      $this->port = $port;
     }
 
     public function getDatabase($name) {
@@ -36,7 +37,11 @@ class Connection {
       }
 
       if (!isset($this->dbs[$name])) {
-        $this->dbs[$name] = $this->client->selectDB($name);
+        $db = $this->client->selectDB($name);
+        if(!$db->exists()) {
+          $db->create(null, false);
+        }
+        $this->dbs[$name] = $db;
       }
 
       return $this->dbs[$name];
