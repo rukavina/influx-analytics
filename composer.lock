@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e1376fa00c67f53a6e866cc0dbe533cd",
-    "content-hash": "112aaaa582cc1ff228d50400cfddbaf4",
+    "hash": "da5d8933d3e8f1ddfbb6b8b0319858c8",
+    "content-hash": "94bfc73f141f4a3d4c1a10fc5ac0a70e",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -187,22 +187,22 @@
         },
         {
             "name": "influxdb/influxdb-php",
-            "version": "1.14.3",
+            "version": "dev-feature/guzzle5-6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/influxdata/influxdb-php.git",
-                "reference": "c361cede08c7b6857ced26bd3d100406a230d09c"
+                "reference": "7bd934eab5b759befcd94779bc576134aab9e219"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/influxdata/influxdb-php/zipball/c361cede08c7b6857ced26bd3d100406a230d09c",
-                "reference": "c361cede08c7b6857ced26bd3d100406a230d09c",
+                "url": "https://api.github.com/repos/influxdata/influxdb-php/zipball/7bd934eab5b759befcd94779bc576134aab9e219",
+                "reference": "7bd934eab5b759befcd94779bc576134aab9e219",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "6.*",
+                "guzzlehttp/guzzle": "~5.0|~6.0",
                 "php": "^5.5 | ^7.0",
-                "symfony/event-dispatcher": "2.*|3.*"
+                "symfony/event-dispatcher": "~2.0|~3.0"
             },
             "require-dev": {
                 "codeclimate/php-test-reporter": "0.*",
@@ -240,14 +240,13 @@
             "description": "InfluxDB client library for PHP",
             "keywords": [
                 "client",
-                "influxdata",
                 "influxdb",
                 "influxdb class",
                 "influxdb client",
                 "influxdb library",
                 "time series"
             ],
-            "time": "2017-01-04 20:36:33"
+            "time": "2016-03-17 09:52:14"
         },
         {
             "name": "psr/http-message",
@@ -1813,7 +1812,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "influxdb/influxdb-php": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
