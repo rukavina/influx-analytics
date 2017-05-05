@@ -90,7 +90,7 @@ class ClientPeriod implements ClientInterface {
 				->getResultSet();
 
 		$points = $results->getPoints();
-		return = isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
+		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 	}
 
 
