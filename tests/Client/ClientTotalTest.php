@@ -18,7 +18,7 @@ class ClientTotalTest extends TestCase {
   public function providerTotalByDateData() {
       return [          
           //total    
-          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", "2017-03-04T01:12:12Z", json_encode(array("status"=>"send"))],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", "2017-03-04 01:12:12", json_encode(array("status"=>"send"))],
       ];
   }
 

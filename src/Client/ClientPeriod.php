@@ -24,8 +24,8 @@ class ClientPeriod implements ClientInterface {
 		$this->db = $db;
 		$this->serviceId = isset($inputData["serviceId"]) ? $inputData["serviceId"] : null;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
-		$this->startDt = isset($inputData["startDt"]) ? $inputData["startDt"] : null;
-		$this->endDt = isset($inputData["endDt"]) ? $inputData["endDt"] : null;
+		$this->startDt = isset($inputData["startDt"]) ? $this->normalizeUTC($inputData["startDt"]) : null;
+		$this->endDt = isset($inputData["endDt"]) ? $this->normalizeUTC($inputData["endDt"]) : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
 		$this->granularity = isset($inputData["granularity"]) ? $inputData["granularity"] : null;
 	}
@@ -100,6 +100,12 @@ class ClientPeriod implements ClientInterface {
 		echo "Total:";
 		var_dump($total);
 		return $total;
+	}
+
+
+	protected function normalizeUTC($date) {
+		$parts = explode(" ", $date);
+		return is_array($parts) && count($parts) == 2  ? $parts[0] . "T" . $parts[1] . "Z" : $date;
 	}
 
 }

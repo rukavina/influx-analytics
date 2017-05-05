@@ -22,24 +22,24 @@ class ClientPeriodTest extends TestCase {
           [
             "d354fe67-87f2-4438-959f-65fde4622044", 
             "sms", 
-            "2017-06-01T00:00:00Z", 
-            "2017-06-02T23:59:59Z", 
+            "2017-06-01 00:00:00", 
+            "2017-06-02 23:59:59", 
             json_encode(array("status" => "send")),
             "hourly"
           ],
           [
             "d354fe67-87f2-4438-959f-65fde4622044", 
             "sms", 
-            "2017-06-01T00:00:00Z", 
-            "2017-06-02T23:59:59Z", 
+            "2017-06-01 00:00:00", 
+            "2017-06-02 23:59:59", 
             json_encode(array("status" => "send")),
             "daily"
           ],
           [
             "d354fe67-87f2-4438-959f-65fde4622044", 
             "sms", 
-            "2017-06-01T00:00:00Z", 
-            "2017-06-02T23:59:59Z", 
+            "2017-06-01 00:00:00", 
+            "2017-06-02 23:59:59", 
             json_encode(array("status" => "send")),
             "weekly"
           ]
@@ -52,8 +52,8 @@ class ClientPeriodTest extends TestCase {
           [
             "d354fe67-87f2-4438-959f-65fde4622044", 
             "sms",
-            "2017-06-01T00:00:00Z", 
-            "2017-06-02T23:59:59Z", 
+            "2017-06-01 00:00:00", 
+            "2017-06-02 23:59:59", 
             json_encode(array("status" => "send", "type" => "scheduled"))
           ],
       ];

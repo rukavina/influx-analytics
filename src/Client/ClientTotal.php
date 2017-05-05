@@ -20,7 +20,7 @@ class ClientTotal implements ClientInterface {
 		$this->serviceId = isset($inputData["serviceId"]) ? $inputData["serviceId"] : null;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : null;
-		$this->date = isset($inputData["date"]) ? $inputData["date"] : null;
+		$this->date = isset($inputData["date"]) ? $this->normalizeUTC($inputData["date"]) : null;
 	}
 	
 	/**
@@ -51,6 +51,11 @@ class ClientTotal implements ClientInterface {
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 
 		return $total;
+	}
+
+	protected function normalizeUTC($date) {
+		$parts = explode(" ", $date);
+		return is_array($parts) && count($parts) == 2  ? $parts[0] . "T" . $parts[1] . "Z" : $date;
 	}
 
 }
