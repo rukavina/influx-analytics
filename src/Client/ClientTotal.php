@@ -19,7 +19,7 @@ class ClientTotal implements ClientInterface {
 		$this->db = $db;
 		$this->serviceId = isset($inputData["serviceId"]) ? $inputData["serviceId"] : null;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
-		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : null;
+		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
 		$this->date = isset($inputData["date"]) ? $this->normalizeUTC($inputData["date"]) : null;
 	}
 	
@@ -39,7 +39,7 @@ class ClientTotal implements ClientInterface {
 		foreach($this->tags as $key => $val) {
 			$where[] = "$key = '" . $val . "'";
 		}
-
+	
 		$results = $this->db->getQueryBuilder()
 				->select('news')
 				->from($this->metrix)
@@ -49,8 +49,6 @@ class ClientTotal implements ClientInterface {
 
 		$points = $results->getPoints();
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
-
-		return $total;
 	}
 
 	protected function normalizeUTC($date) {

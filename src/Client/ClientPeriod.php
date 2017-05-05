@@ -54,24 +54,18 @@ class ClientPeriod implements ClientInterface {
 		//granularity
 		if( $this->granularity == self::GRANULARITY_HOURLY ) {
 			$query->groupBy('time(1h)');
-			//$query .= " GROUP BY time(1h)";
 		}	
 		else if( $this->granularity == self::GRANULARITY_WEEKLY ) {
 			$query->groupBy('time(1w)');
-			//$query .= " GROUP BY time(1w)";
 		}
 		//daily by default
 		else {
 			$query->groupBy('time(1d)');
-			//$query .= " GROUP BY time(1d)";
 		}	
 		
 		$data = $query->getResultSet()
 	          ->getPoints();
 
-
-	    echo "Data:";      
-	    print_r($data);      
 		return $data;
 	}
 
@@ -96,10 +90,7 @@ class ClientPeriod implements ClientInterface {
 				->getResultSet();
 
 		$points = $results->getPoints();
-		$total = isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
-		echo "Total:";
-		var_dump($total);
-		return $total;
+		return = isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 	}
 
 
