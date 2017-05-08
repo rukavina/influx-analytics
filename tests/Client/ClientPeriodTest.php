@@ -65,7 +65,7 @@ class ClientPeriodTest extends TestCase {
    */
   public function getData($service, $metrix, $startDt, $endDt, $tags, $granularity) {
   	$inputData = [
-  		"serviceId" => $service,
+  		"service" => $service,
   		"metrix" 	=> $metrix,
   		"startDt" 	=> $startDt,
       "endDt" 	=> $endDt,
@@ -87,7 +87,7 @@ class ClientPeriodTest extends TestCase {
    */
   public function getTotal($service, $metrix, $startDt, $endDt, $tags) {
     $inputData = [
-      "serviceId" => $service,
+      "service" => $service,
       "metrix"  => $metrix,
       "startDt"   => $startDt,
       "endDt"   => $endDt,

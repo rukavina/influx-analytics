@@ -10,7 +10,7 @@ use \Exception;
 class ClientPeriod implements ClientInterface {
 
 	protected $db;
-	protected $serviceId;
+	protected $service;
 	protected $metrix;
 	protected $startDt;
 	protected $endDt;
@@ -22,7 +22,7 @@ class ClientPeriod implements ClientInterface {
 	
 	public function __construct($db, $inputData) {
 		$this->db = $db;
-		$this->serviceId = isset($inputData["serviceId"]) ? $inputData["serviceId"] : null;
+		$this->service = isset($inputData["service"]) ? $inputData["service"] : null;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
 		$this->startDt = isset($inputData["startDt"]) ? $this->normalizeUTC($inputData["startDt"]) : null;
 		$this->endDt = isset($inputData["endDt"]) ? $this->normalizeUTC($inputData["endDt"]) : null;
@@ -43,7 +43,10 @@ class ClientPeriod implements ClientInterface {
 					->count('value')
 					->from('sms');
 
-		$where[] = "service='" . $this->serviceId . "'";
+
+		if (!isset($this->tags["service"])) {
+			$where[] = "service='" . $this->service . "'";
+		}
 		$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
 		foreach($this->tags as $key => $val) {
 			$where[] = "$key = '" . $val . "'";
@@ -76,7 +79,9 @@ class ClientPeriod implements ClientInterface {
 	public function getTotal() {
 		$where = [];
 		
-		$where[] = "service='" . $this->serviceId . "'";
+		if (!isset($this->tags["service"])) {
+			$where[] = "service='" . $this->service . "'";
+		}
 		$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
 		foreach($this->tags as $key => $val) {
 			$where[] = "$key = '" . $val . "'";

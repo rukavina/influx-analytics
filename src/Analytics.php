@@ -30,12 +30,14 @@ class Analytics implements AnalyticsInterface {
         
         $command =  isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
         $timeNs = exec("date $command +%s%N"); // Time precision is in nanaoseconds
+        $tags = is_array($tags) && count($tags) > 0 ? $tags['service'] = $serviceId : array();
+        $fields = array();
         $points = array(
 			new Point(
 				$metrix,
 				$value, // value
 				$tags, // array('status' => 'send','type' => 'scheduled','campaign' => 'may')
-				array('service' => $serviceId),
+				$fields, 
 				$timeNs
 			)
 		);	    

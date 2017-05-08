@@ -35,7 +35,7 @@ class ClientTotalTest extends TestCase {
    */
   public function getTotalByDate($service, $metrix, $date, $tags) {
     $inputData = [
-      "serviceId" => $service,
+      "service" => $service,
       "metrix"  => $metrix,
       "date"   => $date,
       "tags"   => json_decode($tags, true)

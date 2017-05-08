@@ -34,7 +34,9 @@ class ClientTotal implements ClientInterface {
 			throw new Exception("Client period missing some of input params.");
 		}
 
-		$where[] = "service='" . $this->serviceId . "'";
+		if (!isset($this->tags["service"])) {
+			$where[] = "service='" . $this->serviceId . "'";
+		}
 		$where[] = null != $this->date ? "time <= '" . $this->date . "'" : "time >= '2016-01-11T00:00:00Z'";
 		foreach($this->tags as $key => $val) {
 			$where[] = "$key = '" . $val . "'";
