@@ -20,7 +20,7 @@ class Analytics implements AnalyticsInterface {
      * Save analytics
      * 
      * @param  InfluxDB\Database $db Mongo db
-     * @param  string $serviceId Service id
+     * @param  string $service Service 
      * @param  string $metrix    Metrix
      * @param  array $tags       Tags
      * @param  string $date     Datetime
