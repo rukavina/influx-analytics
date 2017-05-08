@@ -57,7 +57,7 @@ class ClientTotalTest extends TestCase {
    */
   public function getTotal($service, $metrix, $tags) {
     $inputData = [
-      "serviceId" => $service,
+      "service" => $service,
       "metrix"  => $metrix,    
       "tags"   => json_decode($tags, true),
     ];
