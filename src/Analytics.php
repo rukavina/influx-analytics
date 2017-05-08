@@ -23,13 +23,13 @@ class Analytics implements AnalyticsInterface {
      * @param  string $serviceId Service id
      * @param  string $metrix    Metrix
      * @param  array $tags       Tags
-     * @param  string $utcDt     Datetime
+     * @param  string $date     Datetime
      */
-    public function save($db, $serviceId, $metrix, $tags, $value = 1, $utcDt) {
-      	//curl -i -XPOST 'http://localhost:8086/write?db=news' --data-binary 'sms,status=send,creator=scheduled service=1234-1234-1234-1234 value=1 1434055562000000000'
+    public function save($db, $serviceId, $metrix, $tags, $value = 1, $date) {
+      	//curl -i -XPOST 'http://localhost:8086/write?db=news' --data-binary 'sms,status=send,creator=scheduled service=1234-1234-1234-1234 value=1 1434055562000000000'   
         
-    	//$timeNs = isset($utcDt) ? $utcDt : exec('date +%s%N'); // Time precision has to be set to seconds!
-        $timeNs = $utcDt;
+        $command =  isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
+        $timeNs = exec("date $command +%s%N"); // Time precision is in nanaoseconds
         $points = array(
 			new Point(
 				$metrix,
@@ -40,9 +40,16 @@ class Analytics implements AnalyticsInterface {
 			)
 		);	    
 
-		// we are writing unix timestamps, which have a second precision
+		// we are writing a nanosecond precision
 		$result = $db->writePoints($points, Database::PRECISION_NANOSECONDS);
-		//print_r($result);
-      	return $result;
-    }    
+		return $result;
+    } 
+
+    protected function normalizeUTC($date) {
+        $parts = explode(" ", $date);
+        if(!is_array($parts) || count($parts) != 2) {
+            throw new Exeception("Wrong date format[$date]");
+        }
+        return $parts[0] . "T" . $parts[1] . "Z";
+    }   
 }
