@@ -10,14 +10,14 @@ use \Exception;
 class ClientTotal implements ClientInterface {
 
 	protected $db;
-	protected $serviceId;
+	protected $service;
 	protected $metrix;
 	protected $date;
 	protected $granularity;
 
 	public function __construct($db, $inputData) {
 		$this->db = $db;
-		$this->serviceId = isset($inputData["serviceId"]) ? $inputData["serviceId"] : null;
+		$this->service = isset($inputData["service"]) ? $inputData["service"] : null;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
 		$this->date = isset($inputData["date"]) ? $this->normalizeUTC($inputData["date"]) : null;
@@ -30,12 +30,12 @@ class ClientTotal implements ClientInterface {
 	public function getTotal() {
 		$where = [];
 		
-		if (null == $this->serviceId || null == $this->metrix ) {
+		if ( null == $this->service || null == $this->metrix ) {
 			throw new Exception("Client period missing some of input params.");
 		}
 
 		if (!isset($this->tags["service"])) {
-			$where[] = "service='" . $this->serviceId . "'";
+			$where[] = "service='" . $this->service . "'";
 		}
 		$where[] = null != $this->date ? "time <= '" . $this->date . "'" : "time >= '2016-01-11T00:00:00Z'";
 		foreach($this->tags as $key => $val) {
