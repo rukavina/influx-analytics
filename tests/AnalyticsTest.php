@@ -76,9 +76,9 @@ class AnalyticsTest extends TestCase {
    * @dataProvider providerData 
    * @test
    */
-  public function save($service, $metrix, $tags, $utc) {
+  public function save($service, $metrix, $tags, $value, $utc) {
     $analytics = new Analytics();
-    $data = $analytics->save(self::$db, $service, $metrix, json_decode($tags, true), $utc); 
+    $data = $analytics->save(self::$db, $service, $metrix, json_decode($tags, true), $value, $utc); 
     $this->assertTrue($data);
   }
 
@@ -99,7 +99,11 @@ class AnalyticsTest extends TestCase {
       $mm = $mm < 10 ? "0" . $mm : $mm;
       $s = $s < 10 ? "0" . $s : $s;
 
-      $item = ["d354fe67-87f2-4438-959f-65fde4622044", $metrix, json_encode($tags), "2017-$m-$d $h:$mm:$s"];
+
+      //$utc = time_nanosleep(strtotime("2017-$m-$d $h:$mm:$s"), rand(0, 1000000000 - 1));      
+      $utc = strtotime("2017-$m-$d $h:$mm:$s");      
+
+      $item = ["d354fe67-87f2-4438-959f-65fde4622044", $metrix, json_encode($tags), 1, $utc];
       $data[] = $item;
       $i++;
     }

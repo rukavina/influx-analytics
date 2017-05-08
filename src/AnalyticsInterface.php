@@ -4,6 +4,6 @@ namespace Vorbind\InfluxAnalytics;
 
 interface AnalyticsInterface {
 
-	public function save($db, $serviceId, $metrix, $tags, $utcDt);
+	public function save($db, $serviceId, $metrix, $tags, $value, $utc);
 	
 } 
