@@ -14,8 +14,10 @@ class AnalyticsTest extends TestCase {
     self::$db = $conn->getDatabase("news");
 
     try {
-      self::$db->query(sprintf('drop measurement "%s"', "sms"));
+      self::$db->query(sprintf('drop measurement "%s"', "campaign"));
+      self::$db->query(sprintf('drop measurement "%s"', "list"));
       self::$db->query(sprintf('drop measurement "%s"', "contact"));
+      self::$db->query(sprintf('drop measurement "%s"', "sms"));
     } catch (Exception $e) {
       print("Exception measurement not exist..");
     }
@@ -23,51 +25,34 @@ class AnalyticsTest extends TestCase {
 
   public function providerData($data) {
       $data = [];
-      //january
-      $data = $this->getMonthData("contact", $data, array(), "01");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','type' => 'easysms'), "02");
-      //february
-      $data = $this->getMonthData("contact", $data, array(), "02");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','type' => 'easysms'), "02");
-      //mart
-      $data = $this->getMonthData("contact", $data, array(), "03");
-      $data = $this->getMonthData("sms", $data, array('status' => 'send','type' => 'easysms'), "03");
-      //april
-      $data = $this->getMonthData("contact", $data, array(), "04");
-      $data = $this->getMonthData(
-        "sms", 
-        $data, 
-        array(
-          'status' => 'send',
-          'type' => 'scheduled',
-          'campaign' => "april"
-        ),
-        "04"
-      );
-      //may
-      $data = $this->getMonthData("contact", $data, array(), "05");
-      $data = $this->getMonthData(
-        "sms", 
-        $data, 
-        array(
-          'status' => 'send', 
-          'type' => 'scheduled', 
-          'campaign' => "may"
-        ),
-        "05"
-      );
-      //jun
-      $data = $this->getMonthData("contact", $data, array(), "06");
-      $data = $this->getMonthData(
-        "sms", 
-        $data, 
-        array(
-          'status' => 'send',
-          'type' => 'scheduled', 
-          'campaign' => "jun"
-        ),
-        "06"
-      );
+
+      //campaigns
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','name'=>'april']), 1, "2017-04-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','name'=>'may']), 1, "2017-05-02 00:03:01"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','name'=>'jun']), 1, "2017-06-01 00:01:11"];
+            
+      //lists
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-01-01 11:03:23"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-03-11 14:13:41"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-04-02 08:23:11"];
+      
+      //smss
+      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'easysms'], "01");
+      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'easysms'], "02");
+      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'easysms'], "03");
+      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'scheduled','campaign' => "april"], "04");
+      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'scheduled','campaign' => "may"], "05");
+      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'scheduled','campaign' => "jun"], "06");
+
+      //contacts
+      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "01");
+      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "02");
+      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "03");
+      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "04");
+      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "05");
+      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "06");
+      
+  
 
       return $data;
   }

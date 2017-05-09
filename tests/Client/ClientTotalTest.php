@@ -18,14 +18,20 @@ class ClientTotalTest extends TestCase {
   public function providerTotalByDateData() {
       return [          
           //total    
-          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", "2017-03-04 01:12:12", json_encode(array("status"=>"send"))],
+          //["d354fe67-87f2-4438-959f-65fde4622044", "campaign", "2017-03-04 01:12:12", json_encode(array("status"=>"active"))],
+          //["d354fe67-87f2-4438-959f-65fde4622044", "list", "2017-03-04 01:12:12", json_encode(array("status"=>"active"))],
+          //["d354fe67-87f2-4438-959f-65fde4622044", "contact", "2017-03-04 01:12:12", json_encode(array("status"=>"active"))],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", "2017-06-02 23:59:59", json_encode([])]
       ];
   }
 
   public function providerTotalData() {
       return [          
           //total    
-          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", json_encode(array())],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode([])],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode([])],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "contact", json_encode([])],
+          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", json_encode([])]
       ];
   }
 
@@ -45,10 +51,8 @@ class ClientTotalTest extends TestCase {
     $total = $client->getTotal();
 
     $this->assertTrue(is_integer($total));
-    //$this->assertEquals(36, $total);
-    $this->assertGreaterThan(0, $total);
-    echo "TOTAL[$date]:";
-    var_dump($total);
+    $this->assertGreaterThanOrEqual(0, $total);
+    echo "@@@ TOTAL[$date][$metrix]:$total";
   }
   
   /**
@@ -66,9 +70,8 @@ class ClientTotalTest extends TestCase {
     $total = $client->getTotal();
 
     $this->assertTrue(is_integer($total));
-    $this->assertGreaterThan(0, $total);
-    echo "TOTAL:";
-    var_dump($total);
+    $this->assertGreaterThanOrEqual(0, $total);
+    echo "@@@ TOTAL[$metrix]:$total";
   }  
   
 }

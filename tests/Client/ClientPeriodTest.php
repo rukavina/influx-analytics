@@ -52,9 +52,10 @@ class ClientPeriodTest extends TestCase {
           [
             "d354fe67-87f2-4438-959f-65fde4622044", 
             "sms",
-            "2017-06-01 00:00:00", 
+            "2017-01-01 00:00:00", 
             "2017-06-02 23:59:59", 
-            json_encode(array("status" => "send", "type" => "scheduled"))
+            //json_encode(array("status" => "send", "type" => "scheduled"))
+            json_encode([])
           ],
       ];
   }
@@ -75,9 +76,7 @@ class ClientPeriodTest extends TestCase {
     $factory = new ClientFactory();
     $client = $factory->create(self::$db, 'period', $inputData);
     $data = $client->getData();
-
     $this->assertTrue(is_array($data));
- 	
  //	  print_r($data);
   }
 
@@ -98,9 +97,8 @@ class ClientPeriodTest extends TestCase {
     $total = $client->getTotal();
 
     $this->assertTrue(is_integer($total));
-    $this->assertGreaterThan(0, $total);
-
-    //$this->assertEquals(36, $total);
+    $this->assertGreaterThanOrEqual(0, $total);
+    echo "@@@TOTAL[$startDt]-[$endDt][$metrix]:$total";
   }  
   
 }
