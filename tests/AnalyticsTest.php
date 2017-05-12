@@ -27,14 +27,24 @@ class AnalyticsTest extends TestCase {
       $data = [];
 
       //campaigns
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','name'=>'april']), 1, "2017-04-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','name'=>'may']), 1, "2017-05-02 00:03:01"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','name'=>'jun']), 1, "2017-06-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'january']), 1, "2017-01-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'february']), 1, "2017-02-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'martz']), 1, "2017-03-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'april']), 1, "2017-04-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'running','name'=>'may sun']), 1, "2017-05-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'paused','name'=>'may cloud']), 1, "2017-05-11 00:03:01"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'running','name'=>'may middle']), 1, "2017-05-12 00:03:01"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'jun']), 1, "2017-06-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'july']), 1, "2017-07-01 00:01:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'avgust']), 1, "2017-08-01 00:01:11"];
             
       //lists
       $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-01-01 11:03:23"];
       $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-03-11 14:13:41"];
       $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-04-02 08:23:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-05-02 08:23:11"];
+      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-06-02 08:23:11"];
+   
       
       //smss
       $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'easysms'], "01");
