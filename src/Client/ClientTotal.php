@@ -17,9 +17,9 @@ class ClientTotal implements ClientInterface {
 
 	public function __construct($db, $inputData) {
 		$this->db = $db;
-		$this->service = isset($inputData["service"]) ? $inputData["service"] : null;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
+		$this->service = isset($this->tags["service"]) ? $this->tags["service"] : null;
 		$this->date = isset($inputData["date"]) ? $this->normalizeUTC($inputData["date"]) : null;
 	}
 	

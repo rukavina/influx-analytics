@@ -22,11 +22,11 @@ class ClientPeriod implements ClientInterface {
 	
 	public function __construct($db, $inputData) {
 		$this->db = $db;
-		$this->service = isset($inputData["service"]) ? $inputData["service"] : null;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
 		$this->startDt = isset($inputData["startDt"]) ? $this->normalizeUTC($inputData["startDt"]) : null;
 		$this->endDt = isset($inputData["endDt"]) ? $this->normalizeUTC($inputData["endDt"]) : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
+		$this->service = isset($this->tags["service"]) ? $this->tags["service"] : null;
 		$this->granularity = isset($inputData["granularity"]) ? $inputData["granularity"] : null;
 	}
 
