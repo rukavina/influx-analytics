@@ -20,17 +20,15 @@ class Analytics implements AnalyticsInterface {
      * Save analytics
      * 
      * @param  InfluxDB\Database $db Mongo db
-     * @param  string $service Service 
      * @param  string $metrix    Metrix
      * @param  array $tags       Tags
      * @param  string $date     Datetime
      */
-    public function save($db, $serviceId, $metrix, $tags = array(), $value = 1, $date) {
+    public function save($db, $metrix, $tags = array(), $value = 1, $date) {
       	//curl -i -XPOST 'http://localhost:8086/write?db=news' --data-binary 'sms,status=send,creator=scheduled service=1234-1234-1234-1234 value=1 1434055562000000000'   
         
         $command =  isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
         $timeNs = exec("date $command +%s%N"); // Time precision is in nanaoseconds
-        $tags['service'] = $serviceId;
         $fields = array();
         
         $points = array(

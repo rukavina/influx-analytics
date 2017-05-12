@@ -24,46 +24,59 @@ class AnalyticsTest extends TestCase {
   }
 
   public function providerData($data) {
+      $service = "d354fe67-87f2-4438-959f-65fde4622044";
+
+      $campaign1 = "d354fe67-87f2-4438-959f-65fde4622111";
+      $campaign2 = "d354fe67-87f2-4438-959f-65fde4622222";
+      $campaign3 = "d354fe67-87f2-4438-959f-65fde4622333";
+      $campaign4 = "d354fe67-87f2-4438-959f-65fde4622444";
+      $campaign5 = "d354fe67-87f2-4438-959f-65fde4622555";
+      $campaign6 = "d354fe67-87f2-4438-959f-65fde4622666";
+    
       $data = [];
 
-      //campaigns
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'january']), 1, "2017-01-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'february']), 1, "2017-02-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'martz']), 1, "2017-03-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'idle','name'=>'april']), 1, "2017-04-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'finish','running_status' => 'running','name'=>'may sun']), 1, "2017-05-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'paused','name'=>'may cloud']), 1, "2017-05-11 00:03:01"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'running','name'=>'may middle']), 1, "2017-05-12 00:03:01"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'jun']), 1, "2017-06-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'july']), 1, "2017-07-01 00:01:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'avgust']), 1, "2017-08-01 00:01:11"];
+      //------------ campaigns -----------//
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'january', 'service' => $service]), 1, "2017-01-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'february', 'service' => $service]), 1, "2017-02-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'martz', 'service' => $service]), 1, "2017-03-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'april', 'service' => $service]), 1, "2017-04-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'running','name'=>'may sun', 'service' => $service]), 1, "2017-05-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'paused','name'=>'may cloud', 'service' => $service]), 1, "2017-05-11 00:03:01"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'running','name'=>'may middle', 'service' => $service]), 1, "2017-05-12 00:03:01"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'jun', 'service' => $service]), 1, "2017-06-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'july', 'service' => $service]), 1, "2017-07-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'avgust', 'service' => $service]), 1, "2017-08-01 00:01:11"];
             
-      //lists
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-01-01 11:03:23"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-03-11 14:13:41"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-04-02 08:23:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-05-02 08:23:11"];
-      $data[] = ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode(['status' => 'active']), 1, "2017-06-02 08:23:11"];
-   
+      //------------ lists -----------//
+      $data[] = ["list", json_encode(['status' => 'active', 'service' => $service]), 1, "2017-01-01 11:03:23"];
+      $data[] = ["list", json_encode(['status' => 'active', 'service' => $service]), 1, "2017-03-11 14:13:41"];
+      $data[] = ["list", json_encode(['status' => 'active', 'service' => $service]), 1, "2017-04-02 08:23:11"];
+      $data[] = ["list", json_encode(['status' => 'active', 'service' => $service]), 1, "2017-05-02 08:23:11"];
+      $data[] = ["list", json_encode(['status' => 'active', 'service' => $service]), 1, "2017-06-02 08:23:11"]; 
       
-      //smss
-      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'easysms'], "01");
-      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'easysms'], "02");
-      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'easysms'], "03");
-      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'scheduled','campaign' => "april"], "04");
-      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'scheduled','campaign' => "may"], "05");
-      $data = $this->getMonthData("sms", $data, ['status' => 'send','type' => 'scheduled','campaign' => "jun"], "06");
-
-      //contacts
-      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "01");
-      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "02");
-      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "03");
-      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "04");
-      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "05");
-      $data = $this->getMonthData("contact", $data, ['status' => 'active'], "06");
+      //------------ smss -----------//
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "01");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "02");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "03");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "04");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "05");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "06");
       
-  
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign1, 'service' => $service], $data, "01");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign2, 'service' => $service], $data, "02");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign3, 'service' => $service], $data, "03");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign4, 'service' => $service], $data, "04");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign5, 'service' => $service], $data, "05");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign6, 'service' => $service], $data, "06");
 
+      //------------ contacts -----------//
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "01");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "02");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "03");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "04");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "05");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "06");
+      
       return $data;
   }
   
@@ -71,15 +84,15 @@ class AnalyticsTest extends TestCase {
    * @dataProvider providerData 
    * @test
    */
-  public function save($service, $metrix, $tags, $value, $utc) {
+  public function save($metrix, $tags, $value, $utc) {
     $analytics = new Analytics();
-    $data = $analytics->save(self::$db, $service, $metrix, json_decode($tags, true), $value, $utc); 
+    $data = $analytics->save(self::$db, $metrix, json_decode($tags, true), $value, $utc); 
     $this->assertTrue($data);
   }
 
   //-------- helper methods --------//
   
-  protected function getMonthData($metrix, $data, $tags, $m) {
+  protected function getMonthData($metrix, $tags, $data, $m) {
     $limit = rand(10, 60);
     $i = 0;
     // mart
@@ -94,7 +107,11 @@ class AnalyticsTest extends TestCase {
       $mm = $mm < 10 ? "0" . $mm : $mm;
       $s = $s < 10 ? "0" . $s : $s;
       
-      $item = ["d354fe67-87f2-4438-959f-65fde4622044", $metrix, json_encode($tags), 1, "2017-$m-$d $h:$mm:$s"];
+      if ("sms" == $metrix) {
+        $tags["status"] = rand(0,1) ? "sent" : "delivered";
+      }
+
+      $item = [$metrix, json_encode($tags), 1, "2017-$m-$d $h:$mm:$s"];
       $data[] = $item;
       $i++;
     }
