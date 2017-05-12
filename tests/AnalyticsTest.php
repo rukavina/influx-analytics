@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Vorbind\InfluxAnalytics\Connection;
 use Vorbind\InfluxAnalytics\Analytics;
 
-class AnalyticsTest extends TestCase {	
+class AnalyticsTest extends TestCase {  
 
   protected static $db;
 
@@ -32,20 +32,26 @@ class AnalyticsTest extends TestCase {
       $campaign4 = "d354fe67-87f2-4438-959f-65fde4622444";
       $campaign5 = "d354fe67-87f2-4438-959f-65fde4622555";
       $campaign6 = "d354fe67-87f2-4438-959f-65fde4622666";
+      $campaign7 = "d354fe67-87f2-4438-959f-65fde4622777";
+      $campaign8 = "d354fe67-87f2-4438-959f-65fde4622888";
+      $campaign9 = "d354fe67-87f2-4438-959f-65fde4622999";
+
     
       $data = [];
 
       //------------ campaigns -----------//
-      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'january', 'service' => $service]), 1, "2017-01-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'february', 'service' => $service]), 1, "2017-02-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'martz', 'service' => $service]), 1, "2017-03-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name'=>'april', 'service' => $service]), 1, "2017-04-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'running','name'=>'may sun', 'service' => $service]), 1, "2017-05-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'paused','name'=>'may cloud', 'service' => $service]), 1, "2017-05-11 00:03:01"];
-      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'running','name'=>'may middle', 'service' => $service]), 1, "2017-05-12 00:03:01"];
-      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'jun', 'service' => $service]), 1, "2017-06-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'july', 'service' => $service]), 1, "2017-07-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name'=>'avgust', 'service' => $service]), 1, "2017-08-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name' =>'january', 'service' => $service]), 1, "2017-01-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name' =>'february', 'service' => $service]), 1, "2017-02-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name' =>'martz', 'service' => $service]), 1, "2017-03-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'idle', 'name' =>'april', 'service' => $service]), 1, "2017-04-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'finish','running_status' => 'running','name' => 'may sun', 'service' => $service]), 1, "2017-05-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'paused','name' => 'may cloud', 'service' => $service]), 1, "2017-05-11 00:03:01"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'running','name' => 'may middle', 'service' => $service]), 1, "2017-05-12 00:03:01"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'jun', 'service' => $service]), 1, "2017-06-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'july', 'service' => $service]), 1, "2017-07-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'avgust', 'service' => $service]), 1, "2017-08-01 00:01:11"];
+      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'september', 'service' => $service]), 1, "2017-09-01 00:01:11"];
+
             
       //------------ lists -----------//
       $data[] = ["list", json_encode(['status' => 'active', 'service' => $service]), 1, "2017-01-01 11:03:23"];
@@ -61,6 +67,9 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "04");
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "05");
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "06");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "07");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "08");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "09");
       
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign1, 'service' => $service], $data, "01");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign2, 'service' => $service], $data, "02");
@@ -68,6 +77,9 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign4, 'service' => $service], $data, "04");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign5, 'service' => $service], $data, "05");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign6, 'service' => $service], $data, "06");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign7, 'service' => $service], $data, "07");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign8, 'service' => $service], $data, "08");
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign9, 'service' => $service], $data, "09");
 
       //------------ contacts -----------//
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "01");
@@ -76,6 +88,9 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "04");
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "05");
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "06");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "07");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "08");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "09");
       
       return $data;
   }

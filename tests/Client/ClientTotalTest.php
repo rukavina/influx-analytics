@@ -6,7 +6,7 @@ use Vorbind\InfluxAnalytics\Client\ClientFactory;
 use Vorbind\InfluxAnalytics\Client\ClientPeriod;
 
 
-class ClientTotalTest extends TestCase {	
+class ClientTotalTest extends TestCase {  
 
   protected static $db;
 
@@ -16,22 +16,23 @@ class ClientTotalTest extends TestCase {
   }
 
   public function providerTotalByDateData() {
+      $service = "d354fe67-87f2-4438-959f-65fde4622044";
       return [          
-          //total    
-          //["d354fe67-87f2-4438-959f-65fde4622044", "campaign", "2017-03-04 01:12:12", json_encode(array("status"=>"active"))],
-          //["d354fe67-87f2-4438-959f-65fde4622044", "list", "2017-03-04 01:12:12", json_encode(array("status"=>"active"))],
-          //["d354fe67-87f2-4438-959f-65fde4622044", "contact", "2017-03-04 01:12:12", json_encode(array("status"=>"active"))],
-          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", "2017-06-02 23:59:59", json_encode([])]
+          ["campaign", "2017-06-02 23:59:59", json_encode(["service" => $service])],
+          ["list", "2017-06-02 23:59:59", json_encode(["service" => $service])],
+          ["contact", "2017-06-02 23:59:59", json_encode(["service" => $service])],
+          ["sms", "2017-06-02 23:59:59", json_encode(["service" => $service])]
       ];
   }
 
   public function providerTotalData() {
+      $service = "d354fe67-87f2-4438-959f-65fde4622044";
       return [          
           //total    
-          ["d354fe67-87f2-4438-959f-65fde4622044", "campaign", json_encode([])],
-          ["d354fe67-87f2-4438-959f-65fde4622044", "list", json_encode([])],
-          ["d354fe67-87f2-4438-959f-65fde4622044", "contact", json_encode([])],
-          ["d354fe67-87f2-4438-959f-65fde4622044", "sms", json_encode([])]
+          ["campaign", json_encode(["service" => $service])],
+          ["list", json_encode(["service" => $service])],
+          ["contact", json_encode(["service" => $service])],
+          ["sms", json_encode(["service" => $service])]
       ];
   }
 
@@ -39,9 +40,8 @@ class ClientTotalTest extends TestCase {
    * @dataProvider providerTotalByDateData 
    * @test
    */
-  public function getTotalByDate($service, $metrix, $date, $tags) {
+  public function getTotalByDate($metrix, $date, $tags) {
     $inputData = [
-      "service" => $service,
       "metrix"  => $metrix,
       "date"   => $date,
       "tags"   => json_decode($tags, true)
@@ -59,9 +59,8 @@ class ClientTotalTest extends TestCase {
    * @dataProvider providerTotalData 
    * @test
    */
-  public function getTotal($service, $metrix, $tags) {
+  public function getTotal($metrix, $tags) {
     $inputData = [
-      "service" => $service,
       "metrix"  => $metrix,    
       "tags"   => json_decode($tags, true),
     ];
