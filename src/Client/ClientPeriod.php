@@ -41,7 +41,7 @@ class ClientPeriod implements ClientInterface {
 		$query = $this->db->getQueryBuilder()
 					->select('news')
 					->count('value')
-					->from('sms');
+					->from($this->metrix);
 
 
 		if (!isset($this->tags["service"])) {
