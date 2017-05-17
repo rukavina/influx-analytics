@@ -16,39 +16,37 @@ namespace Vorbind\InfluxAnalytics;
 */
 class Connection {
 
-    private $db;
-    private $client;
-    private $host;
-    private $port;
+  private $db;
+  private $client;
+  private $host;
+  private $port;
 
 //    public function __construct($host = 'localhost', $port = '8088') {
-    public function __construct($host = 'localhost', $port = '8186') {
-      $this->host = $host;
-      $this->port = $port;
-    }
+  public function __construct($host = 'localhost', $port = '8186') {
+    $this->host = $host;
+    $this->port = $port;
+  }
 
-    public function getDatabase($name) {
-      try {
-    
-        if (!isset($name)) {
-          throw InvalidArgumentException::invalidType('"db name" driver option', $name, 'string');
-        }
-
-        if (null == $this->client) {
-          $this->client = new \InfluxDB\Client($this->host, $this->port);
-        }
-
-        if (!isset($this->dbs[$name])) {
-          $db = $this->client->selectDB($name);
-          if(!$db->exists()) {
-            $db->create(null, false);
-          }
-          $this->dbs[$name] = $db;
-        }
-      } catch(Exception $e) {
-          error_log("Errrorrrr...");
-          throw new AnalyticsException("Connecting influx db faild", 0, $e);
+  public function getDatabase($name) {
+    try {      
+      if (!isset($name)) {
+        throw InvalidArgumentException::invalidType('"db name" driver option', $name, 'string');
       }
-      return $this->dbs[$name];
+
+      if (null == $this->client) {
+        $this->client = new \InfluxDB\Client($this->host, $this->port);
+      }
+
+      if (!isset($this->dbs[$name])) {
+        $db = $this->client->selectDB($name);
+        if(!$db->exists()) {
+          $db->create(null, false);
+        }
+        $this->dbs[$name] = $db;
+      }
+    } catch(Exception $e) {
+        throw new AnalyticsException("Connecting influx db faild", 0, $e);
     }
+    return $this->dbs[$name];
+  }
 }

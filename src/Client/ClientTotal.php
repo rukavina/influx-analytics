@@ -15,7 +15,6 @@ class ClientTotal implements ClientInterface {
 	protected $db;
 	protected $service;
 	protected $metrix;
-	protected $date;
 	protected $granularity;
 
 	public function __construct($db, $inputData) {
@@ -23,7 +22,6 @@ class ClientTotal implements ClientInterface {
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
 		$this->service = isset($this->tags["service"]) ? $this->tags["service"] : null;
-		$this->date = isset($inputData["date"]) ? $this->normalizeUTC($inputData["date"]) : null;
 	}
 	
 	/**
@@ -41,7 +39,7 @@ class ClientTotal implements ClientInterface {
 			if (!isset($this->tags["service"])) {
 				$where[] = "service='" . $this->service . "'";
 			}
-			$where[] = null != $this->date ? "time <= '" . $this->date . "'" : "time >= '2016-01-11T00:00:00Z'";
+
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
 			}
@@ -60,11 +58,16 @@ class ClientTotal implements ClientInterface {
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 	}
 
+	/**
+	 * Normalize UTC 
+	 * @param  string $date 
+	 * @return string
+	 */
 	protected function normalizeUTC($date) {
-        $parts = explode(" ", $date);
+		$parts = explode(" ", $date);
         if(!is_array($parts) || count($parts) != 2) {
             throw new AnalyticsNormalizeException("Error normalize date, wrong format[$date]");
         }
         return $parts[0] . "T" . $parts[1] . "Z";
-    } 
+	} 
 }

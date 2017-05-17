@@ -48,7 +48,9 @@ class ClientPeriod implements ClientInterface {
 			if (!isset($this->tags["service"])) {
 				$where[] = "service='" . $this->service . "'";
 			}
-			$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+			if(isset($this->startDt) && isset($this->endDt)) {
+				$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+			}
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
 			}
@@ -81,14 +83,18 @@ class ClientPeriod implements ClientInterface {
 	 * @return int total
 	 */
 	public function getTotal() {
-		try {
+		$where = [];
+		$points = [];
 
-			$where = [];
-			
+		try {
 			if (!isset($this->tags["service"])) {
 				$where[] = "service='" . $this->service . "'";
 			}
-			$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+
+			if(isset($this->startDt) && isset($this->endDt)) {
+				$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+			}
+
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
 			}
@@ -107,10 +113,16 @@ class ClientPeriod implements ClientInterface {
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 	}
 
-
+	/**
+	 * Normalize UTC 
+	 * @param  string $date 
+	 * @return string
+	 */
 	protected function normalizeUTC($date) {
 		$parts = explode(" ", $date);
-		return is_array($parts) && count($parts) == 2  ? $parts[0] . "T" . $parts[1] . "Z" : $date;
+        if(!is_array($parts) || count($parts) != 2) {
+            throw new AnalyticsNormalizeException("Error normalize date, wrong format[$date]");
+        }
+        return $parts[0] . "T" . $parts[1] . "Z";
 	}
-
 }
