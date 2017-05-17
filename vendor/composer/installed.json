@@ -1808,13 +1808,13 @@
         "version_normalized": "dev-feature/guzzle5-6",
         "source": {
             "type": "git",
-            "url": "https://github.com/influxdata/influxdb-php.git",
-            "reference": "7bd934eab5b759befcd94779bc576134aab9e219"
+            "url": "https://github.com/vorbind/influxdb-php.git",
+            "reference": "af7b8edb4a33f7927f955a3d3a4a5091c96adce7"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/influxdata/influxdb-php/zipball/7bd934eab5b759befcd94779bc576134aab9e219",
-            "reference": "7bd934eab5b759befcd94779bc576134aab9e219",
+            "url": "https://api.github.com/repos/vorbind/influxdb-php/zipball/af7b8edb4a33f7927f955a3d3a4a5091c96adce7",
+            "reference": "af7b8edb4a33f7927f955a3d3a4a5091c96adce7",
             "shasum": ""
         },
         "require": {
@@ -1831,7 +1831,7 @@
             "symfony/stopwatch": "~2.8",
             "symfony/yaml": "~2.8"
         },
-        "time": "2016-03-17 09:52:14",
+        "time": "2017-05-17 12:42:27",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -1839,22 +1839,26 @@
                 "InfluxDB\\": "src/InfluxDB"
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
+        "autoload-dev": {
+            "psr-4": {
+                "InfluxDB\\Test\\": "tests"
+            }
+        },
         "license": [
             "MIT"
         ],
         "authors": [
             {
-                "name": "Gianluca Arbezzano",
-                "email": "gianarb92@gmail.com"
+                "name": "Stephen Hoogendijk",
+                "email": "stephen@tca0.nl"
             },
             {
                 "name": "Daniel Martinez",
                 "email": "danimartcas@hotmail.com"
             },
             {
-                "name": "Stephen Hoogendijk",
-                "email": "stephen@tca0.nl"
+                "name": "Gianluca Arbezzano",
+                "email": "gianarb92@gmail.com"
             }
         ],
         "description": "InfluxDB client library for PHP",
@@ -1865,6 +1869,9 @@
             "influxdb client",
             "influxdb library",
             "time series"
-        ]
+        ],
+        "support": {
+            "source": "https://github.com/vorbind/influxdb-php/tree/feature/guzzle5-6"
+        }
     }
 ]

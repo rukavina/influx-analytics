@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "933d008119e47b22f830b391c0a7da0d",
-    "content-hash": "7ffeaf0aabb56366e4e69ab1fc3192c0",
+    "hash": "4db7a7441d786b8392e2d59ae99d6304",
+    "content-hash": "bec334dd383b1b5ae775c766c638de4d",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -190,13 +190,13 @@
             "version": "dev-feature/guzzle5-6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/influxdata/influxdb-php.git",
-                "reference": "7bd934eab5b759befcd94779bc576134aab9e219"
+                "url": "https://github.com/vorbind/influxdb-php.git",
+                "reference": "af7b8edb4a33f7927f955a3d3a4a5091c96adce7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/influxdata/influxdb-php/zipball/7bd934eab5b759befcd94779bc576134aab9e219",
-                "reference": "7bd934eab5b759befcd94779bc576134aab9e219",
+                "url": "https://api.github.com/repos/vorbind/influxdb-php/zipball/af7b8edb4a33f7927f955a3d3a4a5091c96adce7",
+                "reference": "af7b8edb4a33f7927f955a3d3a4a5091c96adce7",
                 "shasum": ""
             },
             "require": {
@@ -219,22 +219,26 @@
                     "InfluxDB\\": "src/InfluxDB"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "InfluxDB\\Test\\": "tests"
+                }
+            },
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Gianluca Arbezzano",
-                    "email": "gianarb92@gmail.com"
+                    "name": "Stephen Hoogendijk",
+                    "email": "stephen@tca0.nl"
                 },
                 {
                     "name": "Daniel Martinez",
                     "email": "danimartcas@hotmail.com"
                 },
                 {
-                    "name": "Stephen Hoogendijk",
-                    "email": "stephen@tca0.nl"
+                    "name": "Gianluca Arbezzano",
+                    "email": "gianarb92@gmail.com"
                 }
             ],
             "description": "InfluxDB client library for PHP",
@@ -246,7 +250,10 @@
                 "influxdb library",
                 "time series"
             ],
-            "time": "2016-03-17 09:52:14"
+            "support": {
+                "source": "https://github.com/vorbind/influxdb-php/tree/feature/guzzle5-6"
+            },
+            "time": "2017-05-17 12:42:27"
         },
         {
             "name": "psr/http-message",
