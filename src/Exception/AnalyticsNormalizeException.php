@@ -2,6 +2,8 @@
 
 namespace Vorbind\InfluxAnalytics\Exception;
 
+use \Exception;
+
 class AnalyticsNormalizeException extends Exception
 {
 

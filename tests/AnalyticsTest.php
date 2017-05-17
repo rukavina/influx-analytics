@@ -102,15 +102,16 @@ class AnalyticsTest extends TestCase {
    * @test
    */
   public function save($metrix, $tags, $value, $utc) {
+    $data = null;
     try {
       $analytics = new Analytics();
-      $data = $analytics->save(self::$db, $metrix, json_decode($tags, true), $value, $utc); 
+      $data = $analytics->save(self::$db, $metrix, json_decode($tags, true), $value, $utc);
+      $this->assertNotEmpty($data);
+      $this->assertTrue($data); 
     } catch(AnalyticsException $e) {
       $data = null;
       $this->assertNotEmpty($data);
-      return;
     }
-    $this->assertTrue($data);
   }
 
   //-------- helper methods --------//

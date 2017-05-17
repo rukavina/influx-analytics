@@ -41,18 +41,24 @@ class ClientTotalTest extends TestCase {
    * @test
    */
   public function getTotalByDate($metrix, $date, $tags) {
-    $inputData = [
-      "metrix"  => $metrix,
-      "date"   => $date,
-      "tags"   => json_decode($tags, true)
-    ];
-    $factory = new ClientFactory();
-    $client = $factory->create(self::$db, 'total', $inputData);
-    $total = $client->getTotal();
+    $total = null;
+    try {
+      $inputData = [
+        "metrix"  => $metrix,
+        "date"   => $date,
+        "tags"   => json_decode($tags, true)
+      ];
+      $factory = new ClientFactory();
+      $client = $factory->create(self::$db, 'total', $inputData);
+      $total = $client->getTotal();
 
-    $this->assertTrue(is_integer($total));
-    $this->assertGreaterThanOrEqual(0, $total);
-    echo "@@@ TOTAL[$date][$metrix]:$total";
+      $this->assertTrue(is_integer($total));
+      $this->assertGreaterThanOrEqual(0, $total);
+      echo "@@@ TOTAL[$date][$metrix]:$total";
+    } catch (AnalyticsException $e) {
+      $this->assertNotEmpty($total);
+      return;
+    }
   }
   
   /**
@@ -60,17 +66,22 @@ class ClientTotalTest extends TestCase {
    * @test
    */
   public function getTotal($metrix, $tags) {
-    $inputData = [
-      "metrix"  => $metrix,    
-      "tags"   => json_decode($tags, true),
-    ];
-    $factory = new ClientFactory();
-    $client = $factory->create(self::$db, 'total', $inputData);
-    $total = $client->getTotal();
+    $total = null;
+    try {
+      $inputData = [
+        "metrix"  => $metrix,    
+        "tags"   => json_decode($tags, true),
+      ];
+      $factory = new ClientFactory();
+      $client = $factory->create(self::$db, 'total', $inputData);
+      $total = $client->getTotal();
 
-    $this->assertTrue(is_integer($total));
-    $this->assertGreaterThanOrEqual(0, $total);
-    echo "@@@ TOTAL[$metrix]:$total";
-  }  
-  
+      $this->assertTrue(is_integer($total));
+      $this->assertGreaterThanOrEqual(0, $total);
+      echo "@@@ TOTAL[$metrix]:$total";
+    } catch (AnalyticsException $e) {
+      $this->assertNotEmpty($total);
+      return;
+    } 
+  }   
 }
