@@ -21,7 +21,6 @@ class ClientTotal implements ClientInterface {
 		$this->db = $db;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
-		$this->service = isset($this->tags["service"]) ? $this->tags["service"] : null;
 	}
 	
 	/**
@@ -29,23 +28,19 @@ class ClientTotal implements ClientInterface {
 	 * @return int total
 	 */
 	public function getTotal() {
+		$where = [];
+
+		if ( null == $this->tags["service"] || null == $this->metrix ) {
+			throw new AnalyticsException("Client total missing some of input params.");
+		}
+
 		try {
-			$where = [];
 			
-			if ( null == $this->service || null == $this->metrix ) {
-				throw new Exception("Client period missing some of input params.");
-			}
-
-			if (!isset($this->tags["service"])) {
-				$where[] = "service='" . $this->service . "'";
-			}
-
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
 			}
 		
 			$results = $this->db->getQueryBuilder()
-					->select('news')
 					->from($this->metrix)
 					->where($where)
 					->sum('value')

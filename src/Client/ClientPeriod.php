@@ -10,7 +10,6 @@ use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
 class ClientPeriod implements ClientInterface {
 
 	protected $db;
-	protected $service;
 	protected $metrix;
 	protected $startDt;
 	protected $endDt;
@@ -26,7 +25,6 @@ class ClientPeriod implements ClientInterface {
 		$this->startDt = isset($inputData["startDt"]) ? $this->normalizeUTC($inputData["startDt"]) : null;
 		$this->endDt = isset($inputData["endDt"]) ? $this->normalizeUTC($inputData["endDt"]) : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
-		$this->service = isset($this->tags["service"]) ? $this->tags["service"] : null;
 		$this->granularity = isset($inputData["granularity"]) ? $inputData["granularity"] : null;
 	}
 
@@ -38,16 +36,16 @@ class ClientPeriod implements ClientInterface {
 		$data = array();
 		$where = array();
 
+		if ( null == $this->tags["service"] || null == $this->metrix ) {
+			throw new AnalyticsException("Client period missing some of input params.");
+		}
+
 		try {
+
 			$query = $this->db->getQueryBuilder()
-						->select('news')
 						->count('value')
 						->from($this->metrix);
 
-
-			if (!isset($this->tags["service"])) {
-				$where[] = "service='" . $this->service . "'";
-			}
 			if(isset($this->startDt) && isset($this->endDt)) {
 				$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
 			}
@@ -86,11 +84,12 @@ class ClientPeriod implements ClientInterface {
 		$where = [];
 		$points = [];
 
-		try {
-			if (!isset($this->tags["service"])) {
-				$where[] = "service='" . $this->service . "'";
-			}
+		if ( null == $this->tags["service"] || null == $this->metrix ) {
+			throw new AnalyticsException("Client period missing some of input params.");
+		}
 
+		try {
+			
 			if(isset($this->startDt) && isset($this->endDt)) {
 				$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
 			}
@@ -100,7 +99,6 @@ class ClientPeriod implements ClientInterface {
 			}
 
 			$results = $this->db->getQueryBuilder()
-					->select('news')
 					->from($this->metrix)
 					->where($where)
 					->sum('value')
