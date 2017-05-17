@@ -28,8 +28,6 @@ class Analytics implements AnalyticsInterface {
      */
     public function save($db, $metrix, $tags = array(), $value = 1, $date) {
       	//curl -i -XPOST 'http://localhost:8086/write?db=news' --data-binary 'sms,status=send,creator=scheduled service=1234-1234-1234-1234 value=1 1434055562000000000'   
-        set_error_handler("analytics_influx_error_handler");
-
         try {
             $command =  isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
             $timeNs = exec("date $command +%s%N"); // Time precision is in nanaoseconds

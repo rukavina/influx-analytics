@@ -50,7 +50,6 @@ class ClientPeriodTest extends TestCase {
       $factory = new ClientFactory();
       $client = $factory->create(self::$db, 'period', $inputData);
       $data = $client->getData();
-      $this->assertNotEmpty($data);
       $this->assertTrue(is_array($data));
     } catch (AnalyticsException $e) {
       $this->assertNotEmpty($data);
