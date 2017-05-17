@@ -14,7 +14,7 @@ class ClientFactory {
 		$className = __NAMESPACE__ . '\\' . 'Client' .  ucfirst(strtolower($type));
 		
 		if ( !class_exists($className)) {
-			throw new Exception("Client with class [$className] not found!");
+			throw new AnalyticsException("Client with class [$className] not found!");
 		}
 		
 		return new $className($db, $inputData);	

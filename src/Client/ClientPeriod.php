@@ -3,7 +3,7 @@
 namespace Vorbind\InfluxAnalytics\Client;
 
 use \Exception;
-
+use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
 /**
  * Client Period
  */
@@ -38,36 +38,40 @@ class ClientPeriod implements ClientInterface {
 		$data = array();
 		$where = array();
 
-		$query = $this->db->getQueryBuilder()
-					->select('news')
-					->count('value')
-					->from($this->metrix);
+		try {
+			$query = $this->db->getQueryBuilder()
+						->select('news')
+						->count('value')
+						->from($this->metrix);
 
 
-		if (!isset($this->tags["service"])) {
-			$where[] = "service='" . $this->service . "'";
-		}
-		$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
-		foreach($this->tags as $key => $val) {
-			$where[] = "$key = '" . $val . "'";
-		}
+			if (!isset($this->tags["service"])) {
+				$where[] = "service='" . $this->service . "'";
+			}
+			$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+			foreach($this->tags as $key => $val) {
+				$where[] = "$key = '" . $val . "'";
+			}
 
-		$query->where($where);
+			$query->where($where);
 
-		//granularity
-		if( $this->granularity == self::GRANULARITY_HOURLY ) {
-			$query->groupBy('time(1h)');
-		}	
-		else if( $this->granularity == self::GRANULARITY_WEEKLY ) {
-			$query->groupBy('time(1w)');
-		}
-		//daily by default
-		else {
-			$query->groupBy('time(1d)');
-		}	
-		
-		$data = $query->getResultSet()
-	          ->getPoints();
+			//granularity
+			if( $this->granularity == self::GRANULARITY_HOURLY ) {
+				$query->groupBy('time(1h)');
+			}	
+			else if( $this->granularity == self::GRANULARITY_WEEKLY ) {
+				$query->groupBy('time(1w)');
+			}
+			//daily by default
+			else {
+				$query->groupBy('time(1d)');
+			}	
+			
+			$data = $query->getResultSet()
+		          ->getPoints();
+      	} catch (Exception $e) {
+      		throw new AnalyticsException("Analytics client period get data exception");
+      	}
 
 		return $data;
 	}
@@ -77,24 +81,29 @@ class ClientPeriod implements ClientInterface {
 	 * @return int total
 	 */
 	public function getTotal() {
-		$where = [];
-		
-		if (!isset($this->tags["service"])) {
-			$where[] = "service='" . $this->service . "'";
-		}
-		$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
-		foreach($this->tags as $key => $val) {
-			$where[] = "$key = '" . $val . "'";
-		}
+		try {
 
-		$results = $this->db->getQueryBuilder()
-				->select('news')
-				->from($this->metrix)
-				->where($where)
-				->sum('value')
-				->getResultSet();
+			$where = [];
+			
+			if (!isset($this->tags["service"])) {
+				$where[] = "service='" . $this->service . "'";
+			}
+			$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+			foreach($this->tags as $key => $val) {
+				$where[] = "$key = '" . $val . "'";
+			}
 
-		$points = $results->getPoints();
+			$results = $this->db->getQueryBuilder()
+					->select('news')
+					->from($this->metrix)
+					->where($where)
+					->sum('value')
+					->getResultSet();
+
+			$points = $results->getPoints();
+		} catch (Exception $e) {
+			throw new AnalyticsException("Analytics client period get total exception", 0, $e);
+		}
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 	}
 

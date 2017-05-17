@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Vorbind\InfluxAnalytics\Connection;
 use Vorbind\InfluxAnalytics\Client\ClientFactory;
 use Vorbind\InfluxAnalytics\Client\ClientPeriod;
-
+use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
 
 class ClientTotalTest extends TestCase {  
 

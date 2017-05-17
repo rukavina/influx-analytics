@@ -37,18 +37,22 @@ class ClientPeriodTest extends TestCase {
    * @test
    */
   public function getData($metrix, $startDt, $endDt, $tags, $granularity) {
-    $inputData = [
-      "metrix"  => $metrix,
-      "startDt"   => $startDt,
-      "endDt"   => $endDt,
-      "tags" => json_decode($tags, true),
-      "granularity" => $granularity
-    ];
-    $factory = new ClientFactory();
-    $client = $factory->create(self::$db, 'period', $inputData);
-    $data = $client->getData();
-    $this->assertTrue(is_array($data));
- //   print_r($data);
+    try {
+      $inputData = [
+        "metrix"  => $metrix,
+        "startDt"   => $startDt,
+        "endDt"   => $endDt,
+        "tags" => json_decode($tags, true),
+        "granularity" => $granularity
+      ];
+      $factory = new ClientFactory();
+      $client = $factory->create(self::$db, 'period', $inputData);
+      $data = $client->getData();
+      $this->assertTrue(is_array($data));
+    } catch (AnalyticsException $e) {
+      $this->assertNotEmpty($data);
+      return;
+    }
   }
 
   /**
@@ -56,19 +60,24 @@ class ClientPeriodTest extends TestCase {
    * @test
    */
   public function getTotal($metrix, $startDt, $endDt, $tags) {
-    $inputData = [
-      "metrix"  => $metrix,
-      "startDt"   => $startDt,
-      "endDt"   => $endDt,
-      "tags" => json_decode($tags, true)
-    ];
-    $factory = new ClientFactory();
-    $client = $factory->create(self::$db, 'period', $inputData);
-    $total = $client->getTotal();
+    try {
+      $inputData = [
+        "metrix"  => $metrix,
+        "startDt"   => $startDt,
+        "endDt"   => $endDt,
+        "tags" => json_decode($tags, true)
+      ];
+      $factory = new ClientFactory();
+      $client = $factory->create(self::$db, 'period', $inputData);
+      $total = $client->getTotal();
 
-    $this->assertTrue(is_integer($total));
-    $this->assertGreaterThanOrEqual(0, $total);
-    echo "@@@TOTAL[$startDt]-[$endDt][$metrix]:$total";
+      $this->assertTrue(is_integer($total));
+      $this->assertGreaterThanOrEqual(0, $total);
+      echo "@@@TOTAL[$startDt]-[$endDt][$metrix]:$total";
+    } catch (AnalyticsException $e) {
+      $this->assertNotEmpty($total);
+      return;
+    }
   }  
   
 }

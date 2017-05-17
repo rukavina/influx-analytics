@@ -3,6 +3,9 @@
 namespace Vorbind\InfluxAnalytics\Client;
 
 use \Exception;
+use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
+use Vorbind\InfluxAnalytics\Exception\AnalyticsNormalizeException;
+
 
 /**
  * Client Total
@@ -28,34 +31,40 @@ class ClientTotal implements ClientInterface {
 	 * @return int total
 	 */
 	public function getTotal() {
-		$where = [];
+		try {
+			$where = [];
+			
+			if ( null == $this->service || null == $this->metrix ) {
+				throw new Exception("Client period missing some of input params.");
+			}
+
+			if (!isset($this->tags["service"])) {
+				$where[] = "service='" . $this->service . "'";
+			}
+			$where[] = null != $this->date ? "time <= '" . $this->date . "'" : "time >= '2016-01-11T00:00:00Z'";
+			foreach($this->tags as $key => $val) {
+				$where[] = "$key = '" . $val . "'";
+			}
 		
-		if ( null == $this->service || null == $this->metrix ) {
-			throw new Exception("Client period missing some of input params.");
-		}
+			$results = $this->db->getQueryBuilder()
+					->select('news')
+					->from($this->metrix)
+					->where($where)
+					->sum('value')
+					->getResultSet();
 
-		if (!isset($this->tags["service"])) {
-			$where[] = "service='" . $this->service . "'";
+			$points = $results->getPoints();
+		} catch (Exception $e) {
+			throw new AnalyticsException("Analytics client total get total exception", 0, $e);
 		}
-		$where[] = null != $this->date ? "time <= '" . $this->date . "'" : "time >= '2016-01-11T00:00:00Z'";
-		foreach($this->tags as $key => $val) {
-			$where[] = "$key = '" . $val . "'";
-		}
-	
-		$results = $this->db->getQueryBuilder()
-				->select('news')
-				->from($this->metrix)
-				->where($where)
-				->sum('value')
-				->getResultSet();
-
-		$points = $results->getPoints();
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 	}
 
 	protected function normalizeUTC($date) {
-		$parts = explode(" ", $date);
-		return is_array($parts) && count($parts) == 2  ? $parts[0] . "T" . $parts[1] . "Z" : $date;
-	}
-
+        $parts = explode(" ", $date);
+        if(!is_array($parts) || count($parts) != 2) {
+            throw new AnalyticsNormalizeException("Error normalize date, wrong format[$date]");
+        }
+        return $parts[0] . "T" . $parts[1] . "Z";
+    } 
 }

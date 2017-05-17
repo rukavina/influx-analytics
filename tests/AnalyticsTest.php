@@ -3,6 +3,8 @@
 use PHPUnit\Framework\TestCase;
 use Vorbind\InfluxAnalytics\Connection;
 use Vorbind\InfluxAnalytics\Analytics;
+use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
+
 
 class AnalyticsTest extends TestCase {  
 
@@ -100,8 +102,14 @@ class AnalyticsTest extends TestCase {
    * @test
    */
   public function save($metrix, $tags, $value, $utc) {
-    $analytics = new Analytics();
-    $data = $analytics->save(self::$db, $metrix, json_decode($tags, true), $value, $utc); 
+    try {
+      $analytics = new Analytics();
+      $data = $analytics->save(self::$db, $metrix, json_decode($tags, true), $value, $utc); 
+    } catch(AnalyticsException $e) {
+      $data = null;
+      $this->assertNotEmpty($data);
+      return;
+    }
     $this->assertTrue($data);
   }
 
