@@ -23,8 +23,7 @@ class Connection {
   private $username;
   private $password;
 
-//    public function __construct($host = 'localhost', $port = '8088') {
-  public function __construct($username = '', $password = '', $host = 'localhost', $port = '8186') {
+  public function __construct($username = '', $password = '', $host = 'localhost', $port = '8086') {
     $this->host = $host;
     $this->port = $port;
     $this->username = $username;

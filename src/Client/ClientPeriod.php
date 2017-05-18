@@ -4,6 +4,8 @@ namespace Vorbind\InfluxAnalytics\Client;
 
 use \Exception;
 use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
+use Vorbind\InfluxAnalytics\Exception\AnalyticsNormalizeException;
+
 /**
  * Client Period
  */
