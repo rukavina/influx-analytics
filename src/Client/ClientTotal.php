@@ -35,7 +35,9 @@ class ClientTotal implements ClientInterface {
 		}
 
 		try {
-			
+			// if you not set max time he takas current date as max time
+			$where[] = "time <= '2099-01-01T00:00:00Z'"; 
+
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
 			}
