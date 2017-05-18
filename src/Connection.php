@@ -20,11 +20,15 @@ class Connection {
   private $client;
   private $host;
   private $port;
+  private $username;
+  private $password;
 
 //    public function __construct($host = 'localhost', $port = '8088') {
-  public function __construct($host = 'localhost', $port = '8186') {
+  public function __construct($username = '', $password = '', $host = 'localhost', $port = '8186') {
     $this->host = $host;
     $this->port = $port;
+    $this->username = $username;
+    $this->password = $password;
   }
 
   public function getDatabase($name) {
@@ -34,14 +38,14 @@ class Connection {
       }
 
       if (null == $this->client) {
-        $this->client = new \InfluxDB\Client($this->host, $this->port);
+        $this->client = new \InfluxDB\Client($this->host, $this->port, $this->username, $this->password);
       }
 
       if (!isset($this->dbs[$name])) {
         $db = $this->client->selectDB($name);
-        if(!$db->exists()) {
-          $db->create(null, false);
-        }
+        // if(!$db->exists()) {
+        //   $db->create(null, false);
+        // }
         $this->dbs[$name] = $db;
       }
     } catch(Exception $e) {
