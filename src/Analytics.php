@@ -26,7 +26,7 @@ class Analytics implements AnalyticsInterface {
      * @param  array $tags       Tags
      * @param  string $date     Datetime
      */
-    public function save($db, $metrix, $tags = array(), $value = 1, $date) {
+    public function save($db, $metrix, $tags = array(), $value = 1, $date = null) {
       try {
           $command =  isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
           $timeNs = exec("date $command +%s%N"); // Time precision is in nanaoseconds
