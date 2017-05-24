@@ -12,6 +12,8 @@ use Vorbind\InfluxAnalytics\Exception\AnalyticsNormalizeException;
  */
 class ClientTotal implements ClientInterface {
 
+	use \Vorbind\InfluxAnalytics\AnalyticsTrait;
+
 	protected $db;
 	protected $service;
 	protected $metrix;
@@ -54,17 +56,4 @@ class ClientTotal implements ClientInterface {
 		}
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 	}
-
-	/**
-	 * Normalize UTC 
-	 * @param  string $date 
-	 * @return string
-	 */
-	protected function normalizeUTC($date) {
-		$parts = explode(" ", $date);
-        if(!is_array($parts) || count($parts) != 2) {
-            throw new AnalyticsNormalizeException("Error normalize date, wrong format[$date]");
-        }
-        return $parts[0] . "T" . $parts[1] . "Z";
-	} 
 }

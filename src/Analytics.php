@@ -18,6 +18,8 @@ use Vorbind\InfluxAnalytics\Exeception\AnalyticsException;
 */
 class Analytics implements AnalyticsInterface {
 
+    use \Vorbind\InfluxAnalytics\AnalyticsTrait;
+
     /**
      * Save analytics
      * 
@@ -34,26 +36,18 @@ class Analytics implements AnalyticsInterface {
           
           $points = array(
             new Point(
-      				$metrix,
-      				$value, // value
-      				$tags, // array('status' => 'send','type' => 'scheduled','campaign' => 'may')
-      				$fields, 
-      				$timeNs
-      			)
-    		  );	    
-      		// we are writing a nanosecond precision
-      		$result = $db->writePoints($points, Database::PRECISION_NANOSECONDS);
+              $metrix,
+              $value, // value
+              $tags, // array('status' => 'send','type' => 'scheduled','campaign' => 'may')
+              $fields, 
+              $timeNs
+            )
+          );      
+          // we are writing a nanosecond precision
+          $result = $db->writePoints($points, Database::PRECISION_NANOSECONDS);
       } catch(Exception $e) {
           throw new AnalyticsException("Error saving analytics data", 0, $e);
       }
-	    return $result;
-    } 
-
-    protected function normalizeUTC($date) {
-      $parts = explode(" ", $date);
-      if(!is_array($parts) || count($parts) != 2) {
-          throw new AnalyticsNormalizeException("Error normalize date, wrong format[$date]");
-      }
-      return $parts[0] . "T" . $parts[1] . "Z";
+      return $result;
     }   
 }

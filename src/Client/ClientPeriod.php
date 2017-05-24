@@ -11,6 +11,8 @@ use Vorbind\InfluxAnalytics\Exception\AnalyticsNormalizeException;
  */
 class ClientPeriod implements ClientInterface {
 
+	use Vorbind\InfluxAnalytics\AnalyticsTrait;
+
 	protected $db;
 	protected $metrix;
 	protected $startDt;
@@ -27,6 +29,7 @@ class ClientPeriod implements ClientInterface {
 		$this->startDt = isset($inputData["startDt"]) ? $this->normalizeUTC($inputData["startDt"]) : null;
 		$this->endDt = isset($inputData["endDt"]) ? $this->normalizeUTC($inputData["endDt"]) : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
+		$this->timezone = isset($inputData["timezone"]) ? $inputData["timezone"] : 'Etc\UTC';
 		$this->granularity = isset($inputData["granularity"]) ? $inputData["granularity"] : null;
 	}
 
@@ -44,12 +47,14 @@ class ClientPeriod implements ClientInterface {
 
 		try {
 
+			$timeoffset = $this->getTimezoneOffset($this->timezone) . 'h';
+
 			$query = $this->db->getQueryBuilder()
 						->count('value')
 						->from($this->metrix);
 
 			if(isset($this->startDt) && isset($this->endDt)) {
-				$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+				$where[] = "time >= '". $this->startDt . "' + timeoffset AND time <= '" . $this->endDt . "' + timeoffset";
 			}
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
@@ -92,8 +97,10 @@ class ClientPeriod implements ClientInterface {
 
 		try {
 			
+			$timeoffset = $this->getTimezoneOffset($this->timezone) . 'h';
+
 			if(isset($this->startDt) && isset($this->endDt)) {
-				$where[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+				$where[] = "time >= '". $this->startDt . "' + timeoffset AND time <= '" . $this->endDt . "' + timeoffset";
 			}
 
 			foreach($this->tags as $key => $val) {
@@ -111,18 +118,5 @@ class ClientPeriod implements ClientInterface {
 			throw new AnalyticsException("Analytics client period get total exception", 0, $e);
 		}
 		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
-	}
-
-	/**
-	 * Normalize UTC 
-	 * @param  string $date 
-	 * @return string
-	 */
-	protected function normalizeUTC($date) {
-		$parts = explode(" ", $date);
-        if(!is_array($parts) || count($parts) != 2) {
-            throw new AnalyticsNormalizeException("Error normalize date, wrong format[$date]");
-        }
-        return $parts[0] . "T" . $parts[1] . "Z";
 	}
 }
