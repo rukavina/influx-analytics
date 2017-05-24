@@ -1,6 +1,6 @@
 <?php 
 
-namespace Vorbind\InfluxAnalytics\Client;
+namespace \Vorbind\InfluxAnalytics\Client;
 
 use \Exception;
 use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
@@ -11,7 +11,7 @@ use Vorbind\InfluxAnalytics\Exception\AnalyticsNormalizeException;
  */
 class ClientPeriod implements ClientInterface {
 
-	use Vorbind\InfluxAnalytics\AnalyticsTrait;
+	use \Vorbind\InfluxAnalytics\AnalyticsTrait;
 
 	protected $db;
 	protected $metrix;
@@ -29,7 +29,7 @@ class ClientPeriod implements ClientInterface {
 		$this->startDt = isset($inputData["startDt"]) ? $this->normalizeUTC($inputData["startDt"]) : null;
 		$this->endDt = isset($inputData["endDt"]) ? $this->normalizeUTC($inputData["endDt"]) : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
-		$this->timezone = isset($inputData["timezone"]) ? $inputData["timezone"] : 'Etc\UTC';
+		$this->timezone = isset($inputData["timezone"]) ? $inputData["timezone"] : 'UTC';
 		$this->granularity = isset($inputData["granularity"]) ? $inputData["granularity"] : null;
 	}
 
@@ -47,18 +47,20 @@ class ClientPeriod implements ClientInterface {
 
 		try {
 
-			$timeoffset = $this->getTimezoneOffset($this->timezone) . 'h';
-
+			$timeoffset = $this->getTimezoneHourOffset($this->timezone);
+			
 			$query = $this->db->getQueryBuilder()
 						->count('value')
 						->from($this->metrix);
 
 			if(isset($this->startDt) && isset($this->endDt)) {
-				$where[] = "time >= '". $this->startDt . "' + timeoffset AND time <= '" . $this->endDt . "' + timeoffset";
+				$where[] = "time >= '". $this->startDt . "' + $timeoffset AND time <= '" . $this->endDt . "' + $timeoffset";
 			}
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
 			}
+
+			error_log(">>>> where:" . print_r($where, true));
 
 			$query->where($where);
 
@@ -97,10 +99,10 @@ class ClientPeriod implements ClientInterface {
 
 		try {
 			
-			$timeoffset = $this->getTimezoneOffset($this->timezone) . 'h';
-
+			$timeoffset = $this->getTimezoneHourOffset($this->timezone);
+			
 			if(isset($this->startDt) && isset($this->endDt)) {
-				$where[] = "time >= '". $this->startDt . "' + timeoffset AND time <= '" . $this->endDt . "' + timeoffset";
+				$where[] = "time >= '". $this->startDt . "' + $timeoffset AND time <= '" . $this->endDt . "' + $timeoffset";
 			}
 
 			foreach($this->tags as $key => $val) {
