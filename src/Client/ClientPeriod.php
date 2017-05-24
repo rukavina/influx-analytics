@@ -1,6 +1,6 @@
 <?php 
 
-namespace \Vorbind\InfluxAnalytics\Client;
+namespace Vorbind\InfluxAnalytics\Client;
 
 use \Exception;
 use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
