@@ -13,7 +13,6 @@ class AnalyticsTest extends TestCase {
   public static function setUpBeforeClass() {
     echo ">>> set up only once..";
     $conn = new Connection();
-    //$conn = new Connection('news_user','news_pass');
     self::$db = $conn->getDatabase("news");
 
     try {

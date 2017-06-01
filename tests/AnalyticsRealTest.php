@@ -11,14 +11,14 @@ class AnalyticsRealTest extends TestCase {
   protected static $db;
 
   public static function setUpBeforeClass() {
-    echo ">>> set up only once..";
-    $conn = new Connection('zeka','z3k0', 'localhost', 8186);
+    $conn = new Connection();
     self::$db = $conn->getDatabase("news");
   }
 
   public function providerData($data) {
+      $value = rand(30,80); 
       return [
-      	["sms", json_encode(['status' => 'sent', 'type' => 'easysms', 'service' => "d354fe67-87f2-4438-959f-65fde4622044"]), 1, null]
+      	["sms", json_encode(['status' => 'sent', 'type' => 'easysms', 'service' => "d354fe67-87f2-4438-959f-65fde4622044"]), $value, null]
   	  ];
   }
   

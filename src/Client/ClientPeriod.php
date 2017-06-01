@@ -50,7 +50,7 @@ class ClientPeriod implements ClientInterface {
 			$timeoffset = $this->getTimezoneHourOffset($this->timezone);
 			
 			$query = $this->db->getQueryBuilder()
-						->count('value')
+						->sum('value')
 						->from($this->metrix);
 
 			if(isset($this->startDt) && isset($this->endDt)) {
@@ -59,9 +59,7 @@ class ClientPeriod implements ClientInterface {
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
 			}
-
-			error_log(">>>> where:" . print_r($where, true));
-
+		
 			$query->where($where);
 
 			//granularity
@@ -75,6 +73,7 @@ class ClientPeriod implements ClientInterface {
 			else {
 				$query->groupBy('time(1d)');
 			}	
+			
 			
 			$data = $query->getResultSet()
 		          ->getPoints();

@@ -12,7 +12,6 @@ class ClientTotalTest extends TestCase {
 
   public static function setUpBeforeClass() {
     $conn = new Connection();
-    //$conn = new Connection('news_user','news_pass');
     self::$db = $conn->getDatabase("news");
   }
 
