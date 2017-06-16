@@ -18,10 +18,12 @@ class ClientTotal implements ClientInterface {
 	protected $service;
 	protected $metrix;
 	protected $granularity;
+	protected $retentionPolicy;
 
 	public function __construct($db, $inputData) {
 		$this->db = $db;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
+		$this->rp = isset($inputData["rp"]) ? $inputData["rp"] : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
 	}
 	
@@ -31,6 +33,7 @@ class ClientTotal implements ClientInterface {
 	 */
 	public function getTotal() {
 		$where = [];
+		$sum = 0;
 
 		if ( null == $this->tags["service"] || null == $this->metrix ) {
 			throw new AnalyticsException("Client total missing some of input params.");
@@ -44,16 +47,24 @@ class ClientTotal implements ClientInterface {
 				$where[] = "$key = '" . $val . "'";
 			}
 		
-			$results = $this->db->getQueryBuilder()
-					->from($this->metrix)
+			$query = $this->db->getQueryBuilder()
+			        ->from($this->metrix)
 					->where($where)
 					->sum('value')
-					->getResultSet();
+					;
 
-			$points = $results->getPoints();
+			$points = $query->getResultSet()->getPoints();
+			$sum += isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
+
+			if (null != $this->rp) {      
+			    $query->retentionPolicy($this->rp);
+			    $rpPoints = $query->getResultSet()->getPoints();
+			    $sum += isset($rpPoints[0]) && isset($rpPoints[0]["sum"]) ?  $rpPoints[0]["sum"] : 0;
+            } 
+
 		} catch (Exception $e) {
 			throw new AnalyticsException("Analytics client total get total exception", 0, $e);
 		}
-		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
+		return $sum;
 	}
 }

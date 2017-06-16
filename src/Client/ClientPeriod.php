@@ -26,6 +26,7 @@ class ClientPeriod implements ClientInterface {
 	public function __construct($db, $inputData) {
 		$this->db = $db;
 		$this->metrix = isset($inputData["metrix"]) ? $inputData["metrix"] : null;
+		$this->rp = isset($inputData["rp"]) ? $inputData["rp"] : null;
 		$this->startDt = isset($inputData["startDt"]) ? $this->normalizeUTC($inputData["startDt"]) : null;
 		$this->endDt = isset($inputData["endDt"]) ? $this->normalizeUTC($inputData["endDt"]) : null;
 		$this->tags = isset($inputData["tags"]) ? $inputData["tags"] : array();
@@ -74,9 +75,13 @@ class ClientPeriod implements ClientInterface {
 				$query->groupBy('time(1d)');
 			}	
 			
-			
-			$data = $query->getResultSet()
-		          ->getPoints();
+			$data = $query->getResultSet()->getPoints();
+
+		    if (null != $this->rp) {      
+			    $query->retentionPolicy($this->rp);      
+			    $rpData = $query->getResultSet()->getPoints();
+		        $data +=$rpData;          
+		    }      
       	} catch (Exception $e) {
       		throw new AnalyticsException("Analytics client period get data exception");
       	}
@@ -91,6 +96,7 @@ class ClientPeriod implements ClientInterface {
 	public function getTotal() {
 		$where = [];
 		$points = [];
+		$sum = 0;
 
 		if ( null == $this->tags["service"] || null == $this->metrix ) {
 			throw new AnalyticsException("Client period missing some of input params.");
@@ -108,16 +114,24 @@ class ClientPeriod implements ClientInterface {
 				$where[] = "$key = '" . $val . "'";
 			}
 
-			$results = $this->db->getQueryBuilder()
+			$query = $this->db->getQueryBuilder()
 					->from($this->metrix)
 					->where($where)
 					->sum('value')
 					->getResultSet();
 
-			$points = $results->getPoints();
+			$points = $query->getPoints();
+			$sum += isset($points[0]) && isset($points[0]["sum"]) ?  $points[0]["sum"] : 0;
+
+			if (null != $this->rp) {      
+			    $query->retentionPolicy($this->rp);
+			    $rpPoints = $query->getResultSet()->getPoints();
+			    $sum += isset($rpPoints[0]) && isset($rpPoints[0]["sum"]) ?  $rpPoints[0]["sum"] : 0;
+            } 
+
 		} catch (Exception $e) {
 			throw new AnalyticsException("Analytics client period get total exception", 0, $e);
 		}
-		return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
+		return $sum;
 	}
 }
