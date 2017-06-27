@@ -39,50 +39,98 @@ class ClientPeriod implements ClientInterface {
 	 * @return array data
 	 */
 	public function getData() {
-		$data = array();
-		$where = array();
-
+		$data = [];
+		
 		if ( null == $this->tags["service"] || null == $this->metrix ) {
 			throw new AnalyticsException("Client period missing some of input params.");
 		}
 
 		try {
-
-			$timeoffset = $this->getTimezoneHourOffset($this->timezone);
 			
-			$query = $this->db->getQueryBuilder()
+			$timeoffset = $this->getTimezoneHourOffset($this->timezone);
+			$lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
+			
+		    if ($this->rp) {  
+		    	$whereRp = [];
+		    	$queryRp = $this->db->getQueryBuilder()
+		    			->retentionPolicy($this->rp)
 						->sum('value')
 						->from($this->metrix);
 
-			if(isset($this->startDt) && isset($this->endDt)) {
-				$where[] = "time >= '". $this->startDt . "' + $timeoffset AND time <= '" . $this->endDt . "' + $timeoffset";
-			}
-			foreach($this->tags as $key => $val) {
-				$where[] = "$key = '" . $val . "'";
-			}
-		
-			$query->where($where);
+				if(isset($this->startDt) && isset($this->endDt)) {
+					$whereRp[] = "time >= '". $this->startDt . "' + $timeoffset AND time <= '" . $this->endDt . "' + $timeoffset";
+				}
 
-			//granularity
-			if( $this->granularity == self::GRANULARITY_HOURLY ) {
-				$query->groupBy('time(1h)');
-			}	
-			else if( $this->granularity == self::GRANULARITY_WEEKLY ) {
-				$query->groupBy('time(1w)');
-			}
-			//daily by default
-			else {
-				$query->groupBy('time(1d)');
-			}	
+				foreach($this->tags as $key => $val) {
+					$whereRp[] = "$key = '" . $val . "'";
+				}
 			
-			$data = $query->getResultSet()->getPoints();
+				$queryRp->where($whereRp);
 
-		    if (null != $this->rp) {      
-			    $query->retentionPolicy($this->rp);      
-			    $rpData = $query->getResultSet()->getPoints();
-		        $data +=$rpData;          
-		    }      
-      	} catch (Exception $e) {
+				//granularity
+				if( $this->granularity == self::GRANULARITY_HOURLY ) {
+					$queryRp->groupBy('time(1h)');
+				}	
+				else if( $this->granularity == self::GRANULARITY_WEEKLY ) {
+					$queryRp->groupBy('time(1w)');
+				}
+				//daily by default
+				else {
+					$queryRp->groupBy('time(1d)');
+				}	
+
+				//$queryRp->fillWith(0);
+				    
+			    $data = $queryRp->getResultSet()->getPoints();  
+		    }
+
+		    // TODO: check case if 
+
+		    if (!$this->rp || strtotime($this->endDt) > strtotime($lastHourDt)) {
+		    	$now = $this->normalizeUTC(date("Y-m-d H:i:s"));
+				$where = [];
+		    	$startDt = $this->startDt;
+				if (strtotime($this->endDt) > strtotime($lastHourDt) && null != $this->rp) {
+					$startDt = $lastHourDt; //last hour date
+				}
+
+				$query = $this->db->getQueryBuilder()
+						->sum('value')
+						->from($this->metrix);
+
+
+				if(isset($startDt) && isset($this->endDt)) {
+					$where[] = "time >= '". $startDt . "' AND time <= '" . $now  . "'";
+				}
+
+				foreach($this->tags as $key => $val) {
+					$where[] = "$key = '" . $val . "'";
+				}
+			
+				$query->where($where);
+
+				//granularity
+				if( $this->granularity == self::GRANULARITY_HOURLY ) {
+					$query->groupBy('time(1h)');
+				}	
+				else if( $this->granularity == self::GRANULARITY_WEEKLY ) {
+					$query->groupBy('time(1w)');
+				}
+				//daily by default
+				else {
+					$query->groupBy('time(1d)');
+				}
+
+				//$query->fillWith(0);
+				$dataTmp = $query->getResultSet()->getPoints();
+
+				foreach($dataTmp as $item) {
+					$key = $this->arrayMultiSearch($item['time'], $data);
+					$data[$key] = $dataTmp[0];
+			    }
+			}
+
+	  	} catch (Exception $e) {
       		throw new AnalyticsException("Analytics client period get data exception");
       	}
 
@@ -103,29 +151,53 @@ class ClientPeriod implements ClientInterface {
 		}
 
 		try {
+
+			$timeoffset = $this->getTimezoneHourOffset($this->timezone);			
+			$lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
 			
-			$timeoffset = $this->getTimezoneHourOffset($this->timezone);
-			
-			if(isset($this->startDt) && isset($this->endDt)) {
-				$where[] = "time >= '". $this->startDt . "' + $timeoffset AND time <= '" . $this->endDt . "' + $timeoffset";
+			if (null == $this->rp || strtotime($this->endDt) > strtotime($lastHourDt)) {
+				$where = [];
+
+				$startDt = $this->startDt;
+				if (strtotime($this->endDt) > strtotime($lastHourDt) && null != $this->rp) {
+					$startDt = $lastHourDt; //last hour date
+				}
+				
+				if(isset($startDt) && isset($this->endDt)) {
+					$where[] = "time >= '". $startDt . "' AND time <= '" . $this->endDt . "'";
+				}
+
+				foreach($this->tags as $key => $val) {
+					$where[] = "$key = '" . $val . "'";
+				}
+
+				$query = $this->db->getQueryBuilder()
+						->from($this->metrix)
+						->where($where)
+						->sum('value')
+						->getResultSet();
+
+				$points = $query->getPoints();
+				$sum += isset($points[0]) && isset($points[0]["sum"]) ?  $points[0]["sum"] : 0;
 			}
 
-			foreach($this->tags as $key => $val) {
-				$where[] = "$key = '" . $val . "'";
-			}
+			if (null != $this->rp) { 
+				$whereRp = [];
+				foreach($this->tags as $key => $val) {
+					$whereRp[] = "$key = '" . $val . "'";
+				}
 
-			$query = $this->db->getQueryBuilder()
-					->from($this->metrix)
-					->where($where)
-					->sum('value')
-					->getResultSet();
+				if(isset($this->startDt) && isset($this->endDt)) {
+					$whereRp[] = "time >= '". $this->startDt . "' AND time <= '" . $this->endDt . "'";
+				}
 
-			$points = $query->getPoints();
-			$sum += isset($points[0]) && isset($points[0]["sum"]) ?  $points[0]["sum"] : 0;
-
-			if (null != $this->rp) {      
-			    $query->retentionPolicy($this->rp);
-			    $rpPoints = $query->getResultSet()->getPoints();
+			    $query2 = $this->db->getQueryBuilder()
+			            ->retentionPolicy($this->rp)
+						->from($this->metrix)
+						->where($whereRp)
+						->sum('value')
+						->getResultSet();
+			    $rpPoints = $query2->getPoints();
 			    $sum += isset($rpPoints[0]) && isset($rpPoints[0]["sum"]) ?  $rpPoints[0]["sum"] : 0;
             } 
 

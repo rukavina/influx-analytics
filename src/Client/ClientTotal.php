@@ -40,8 +40,12 @@ class ClientTotal implements ClientInterface {
 		}
 
 		try {
+			$lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
 			// if you not set max time he takas current date as max time
-			$where[] = "time <= '2099-01-01T00:00:00Z'"; 
+			$where[] = "time <= '2099-01-01T00:00:00Z'";
+			if (null != $this->rp) {
+				$where[] = "time > '" . $lastHourDt . "'";
+			}
 
 			foreach($this->tags as $key => $val) {
 				$where[] = "$key = '" . $val . "'";
@@ -56,8 +60,14 @@ class ClientTotal implements ClientInterface {
 			$points = $query->getResultSet()->getPoints();
 			$sum += isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 
-			if (null != $this->rp) {      
-			    $query->retentionPolicy($this->rp);
+			if (null != $this->rp) { 
+				$where = ["time <= '2099-01-01T00:00:00Z'"];
+				$query = $this->db->getQueryBuilder()
+				    ->retentionPolicy($this->rp)
+			        ->from($this->metrix)
+					->where($where)
+					->sum('value')
+					;
 			    $rpPoints = $query->getResultSet()->getPoints();
 			    $sum += isset($rpPoints[0]) && isset($rpPoints[0]["sum"]) ?  $rpPoints[0]["sum"] : 0;
             } 

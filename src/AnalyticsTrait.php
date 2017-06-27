@@ -39,5 +39,20 @@ trait AnalyticsTrait {
             throw new AnalyticsNormalizeException("Error normalize date, wrong format[$date]");
         }
         return $parts[0] . "T" . $parts[1] . "Z";
+	}
+
+	/**
+	 * Find key by sub value
+	 * @param  string $needle   
+	 * @param  array $haystack 
+	 * @return string          
+	 */
+	public function arrayMultiSearch($needle,$haystack) {
+		foreach ($haystack as $key=>$data) {
+			if (in_array($needle,$data)) {
+				return $key;
+			}
+		}
+		return false;
 	} 
 }
