@@ -12,7 +12,8 @@ class AnalyticsTest extends TestCase {
 
   public static function setUpBeforeClass() {
     echo ">>> set up only once..";
-    $conn = new Connection();
+    $conn = new Connection('zeka','z3k0','localhost',8186); 
+    //$conn = new Connection();
     self::$db = $conn->getDatabase("news");
 
     try {
@@ -51,8 +52,8 @@ class AnalyticsTest extends TestCase {
       $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'running','name' => 'may middle', 'service' => $service]), 1, "2017-05-12 00:03:01"];
       $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'jun', 'service' => $service]), 1, "2017-06-01 00:01:11"];
       $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'july', 'service' => $service]), 1, "2017-07-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'avgust', 'service' => $service]), 1, "2017-08-01 00:01:11"];
-      $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'september', 'service' => $service]), 1, "2017-09-01 00:01:11"];
+      // $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'avgust', 'service' => $service]), 1, "2017-08-01 00:01:11"];
+      // $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'september', 'service' => $service]), 1, "2017-09-01 00:01:11"];
 
             
       //------------ lists -----------//
@@ -69,9 +70,9 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "04");
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "05");
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "06");
-      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "07");
-      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "08");
-      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "09");
+      // $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "07");
+      // $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "08");
+      // $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "09");
       
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign1, 'service' => $service], $data, "01");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign2, 'service' => $service], $data, "02");
@@ -79,9 +80,9 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign4, 'service' => $service], $data, "04");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign5, 'service' => $service], $data, "05");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign6, 'service' => $service], $data, "06");
-      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign7, 'service' => $service], $data, "07");
-      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign8, 'service' => $service], $data, "08");
-      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign9, 'service' => $service], $data, "09");
+      // $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign7, 'service' => $service], $data, "07");
+      // $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign8, 'service' => $service], $data, "08");
+      // $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign9, 'service' => $service], $data, "09");
 
       //------------ contacts -----------//
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "01");
@@ -90,9 +91,9 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "04");
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "05");
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "06");
-      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "07");
-      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "08");
-      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "09");
+      // $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "07");
+      // $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "08");
+      // $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "09");
       
       return $data;
   }
@@ -105,7 +106,8 @@ class AnalyticsTest extends TestCase {
     $data = null;
     try {
       $analytics = new Analytics();
-      $data = $analytics->save(self::$db, $metrix, json_decode($tags, true), $value, $utc);
+
+      $data = $analytics->save(self::$db, $metrix, json_decode($tags, true), $value, $utc, "years_5");
       $this->assertNotEmpty($data);
       $this->assertTrue($data); 
     } catch(AnalyticsException $e) {
@@ -135,7 +137,8 @@ class AnalyticsTest extends TestCase {
         $tags["status"] = rand(0,1) ? "sent" : "delivered";
       }
 
-      $item = [$metrix, json_encode($tags), 1, "2017-$m-$d $h:$mm:$s"];
+      //$item = [$metrix, json_encode($tags), 1, "2017-$m-$d $h:$mm:$s"];
+      $item = [$metrix, json_encode($tags), 1, "2017-$m-$d $h:01:00"];
       $data[] = $item;
       $i++;
     }

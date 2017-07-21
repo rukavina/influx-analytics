@@ -17,9 +17,17 @@ class AnalyticsRealTest extends TestCase {
   }
 
   public function providerData($data) {
-      $value = rand(30,80); 
+      $easySentValue = rand(50,60);
+      $easyDeliveredValue = rand(20,30);
+
+      $campaignSentValue = rand(70,80);
+      $campaignDeliveredValue = rand(50, 60);
+
       return [
-      	["sms", json_encode(['status' => 'sent', 'type' => 'easysms', 'service' => "d354fe67-87f2-4438-959f-65fde4622044"]), $value, null]
+      	["sms", json_encode(['status' => 'sent', 'type' => 'easysms', 'service' => "d354fe67-87f2-4438-959f-65fde4622044"]), $easySentValue, null],
+        ["sms", json_encode(['status' => 'delivered', 'type' => 'easysms', 'service' => "d354fe67-87f2-4438-959f-65fde4622044"]), $easyDeliveredValue, null],
+        ["sms", json_encode(['status' => 'sent', 'type' => 'campaign', 'service' => "d354fe67-87f2-4438-959f-65fde4622044"]), $campaignSentValue, null],
+        ["sms", json_encode(['status' => 'delivered', 'type' => 'campaign', 'service' => "d354fe67-87f2-4438-959f-65fde4622044"]), $campaignDeliveredValue, null]
   	  ];
   }
   

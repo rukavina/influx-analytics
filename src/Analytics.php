@@ -28,7 +28,7 @@ class Analytics implements AnalyticsInterface {
      * @param  array $tags       Tags
      * @param  string $date     Datetime
      */
-    public function save($db, $metrix, $tags = array(), $value = 1, $date = null) {
+    public function save($db, $metrix, $tags = array(), $value = 1, $date = null, $rp = null) {
       try {
           $command =  isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
           $timeNs = exec("date $command +%s%N"); // Time precision is in nanaoseconds
@@ -44,7 +44,7 @@ class Analytics implements AnalyticsInterface {
             )
           );      
           // we are writing a nanosecond precision
-          $result = $db->writePoints($points, Database::PRECISION_NANOSECONDS);
+          $result = $db->writePoints($points, Database::PRECISION_NANOSECONDS, $rp);
       } catch(Exception $e) {
           throw new AnalyticsException("Error saving analytics data", 0, $e);
       }
