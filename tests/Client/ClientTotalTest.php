@@ -11,7 +11,8 @@ class ClientTotalTest extends TestCase {
   protected static $db;
 
   public static function setUpBeforeClass() {
-    $conn = new Connection();
+    $conn = new Connection('zeka','z3k0','localhost',8186); 
+    // $conn = new Connection();
     self::$db = $conn->getDatabase("news");
   }
 

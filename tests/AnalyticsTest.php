@@ -11,7 +11,6 @@ class AnalyticsTest extends TestCase {
   protected static $db;
 
   public static function setUpBeforeClass() {
-    echo ">>> set up only once..";
     $conn = new Connection('zeka','z3k0','localhost',8186); 
     //$conn = new Connection();
     self::$db = $conn->getDatabase("news");
@@ -36,9 +35,6 @@ class AnalyticsTest extends TestCase {
       $campaign5 = "d354fe67-87f2-4438-959f-65fde4622555";
       $campaign6 = "d354fe67-87f2-4438-959f-65fde4622666";
       $campaign7 = "d354fe67-87f2-4438-959f-65fde4622777";
-      $campaign8 = "d354fe67-87f2-4438-959f-65fde4622888";
-      $campaign9 = "d354fe67-87f2-4438-959f-65fde4622999";
-
     
       $data = [];
 
@@ -52,9 +48,6 @@ class AnalyticsTest extends TestCase {
       $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'running','name' => 'may middle', 'service' => $service]), 1, "2017-05-12 00:03:01"];
       $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'jun', 'service' => $service]), 1, "2017-06-01 00:01:11"];
       $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'july', 'service' => $service]), 1, "2017-07-01 00:01:11"];
-      // $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'avgust', 'service' => $service]), 1, "2017-08-01 00:01:11"];
-      // $data[] = ["campaign", json_encode(['status' => 'active','running_status' => 'idle','name' => 'september', 'service' => $service]), 1, "2017-09-01 00:01:11"];
-
             
       //------------ lists -----------//
       $data[] = ["list", json_encode(['status' => 'active', 'service' => $service]), 1, "2017-01-01 11:03:23"];
@@ -70,9 +63,7 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "04");
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "05");
       $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "06");
-      // $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "07");
-      // $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "08");
-      // $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "09");
+      $data = $this->getMonthData("sms", ['status' => 'sent', 'type' => 'easysms', 'service' => $service], $data, "07", 21, 10);
       
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign1, 'service' => $service], $data, "01");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign2, 'service' => $service], $data, "02");
@@ -80,10 +71,8 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign4, 'service' => $service], $data, "04");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign5, 'service' => $service], $data, "05");
       $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign6, 'service' => $service], $data, "06");
-      // $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign7, 'service' => $service], $data, "07");
-      // $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign8, 'service' => $service], $data, "08");
-      // $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign9, 'service' => $service], $data, "09");
-
+      $data = $this->getMonthData("sms", ['status' => 'sent','type' => 'scheduled', 'campaign' => $campaign7, 'service' => $service], $data, "07", 21, 10);
+  
       //------------ contacts -----------//
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "01");
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "02");
@@ -91,9 +80,7 @@ class AnalyticsTest extends TestCase {
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "04");
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "05");
       $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "06");
-      // $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "07");
-      // $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "08");
-      // $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "09");
+      $data = $this->getMonthData("contact", ['status' => 'active', 'service' => $service], $data, "07", 21, 10);
       
       return $data;
   }
@@ -118,32 +105,33 @@ class AnalyticsTest extends TestCase {
 
   //-------- helper methods --------//
   
-  protected function getMonthData($metrix, $tags, $data, $m) {
-    $limit = rand(10, 60);
-    $i = 0;
-    // mart
-    while($i <= $limit) {
-      $d = rand(1,31);
-      $h = rand(0,23);
-      $mm = rand(0,59);
-      $s = rand(0, 59);
-      
-      $d = $d < 10 ? "0" . $d : $d;
-      $h = $h < 10 ? "0" . $h : $h;
-      $mm = $mm < 10 ? "0" . $mm : $mm;
-      $s = $s < 10 ? "0" . $s : $s;
-      
-      if ("sms" == $metrix) {
-        $tags["status"] = rand(0,1) ? "sent" : "delivered";
-      }
+  protected function getMonthData($metrix, $tags, $data, $m , $nd, $nh) {
+    $jd = 1;
+    $daysInMonth = $m == "02" ? 28 : 30;
+    
+    while($jd <= $daysInMonth) {
+      $ih=0;
+      while($ih <= 23) {
+        
+        $d = $jd < 10 ? "0" . $jd : $jd;
+        $h = $ih < 10 ? "0" . $ih : $ih;
+        
+        if ("sms" == $metrix) {
+          $tags["status"] = rand(0,1) ? "sent" : "delivered";
+        }
 
-      //$item = [$metrix, json_encode($tags), 1, "2017-$m-$d $h:$mm:$s"];
-      $item = [$metrix, json_encode($tags), 1, "2017-$m-$d $h:01:00"];
-      $data[] = $item;
-      $i++;
+        $item = [$metrix, json_encode($tags), rand(100, 600), "2017-$m-$d $h:01:00"];
+        $data[] = $item;
+        $ih++;
+
+        if ( (typeof $nd !== 'undefined') && null !== $nh) {
+          if ($jd == $nd && $ih > $nh) {
+            return $data;
+          }
+        }
+      }
+      $jd++;
     }
     return $data;
   }
-  
-  
 }
