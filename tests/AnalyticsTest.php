@@ -105,7 +105,7 @@ class AnalyticsTest extends TestCase {
 
   //-------- helper methods --------//
   
-  protected function getMonthData($metrix, $tags, $data, $m , $nd, $nh) {
+  protected function getMonthData($metrix, $tags, $data, $m , $nd = null, $nh = null) {
     $jd = 1;
     $daysInMonth = $m == "02" ? 28 : 30;
     
@@ -124,7 +124,7 @@ class AnalyticsTest extends TestCase {
         $data[] = $item;
         $ih++;
 
-        if ( (typeof $nd !== 'undefined') && null !== $nh) {
+        if ( isset($nd) && isset($nh) ) {
           if ($jd == $nd && $ih > $nh) {
             return $data;
           }
