@@ -61,7 +61,7 @@ class ClientTotal implements ClientInterface {
 			$sum += isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
 
 			if (null != $this->rp) { 
-				$where = ["time <= '2099-01-01T00:00:00Z'"];
+				//$where = ["time <= '2099-01-01T00:00:00Z'"];
 				$query = $this->db->getQueryBuilder()
 				    ->retentionPolicy($this->rp)
 			        ->from($this->metrix)
