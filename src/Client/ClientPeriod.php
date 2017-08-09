@@ -123,11 +123,17 @@ class ClientPeriod implements ClientInterface {
 
 				//$query->fillWith(0);
 				$dataTmp = $query->getResultSet()->getPoints();
+                                
+                                //merge (update, or append) to downsampled data
+                                return $this->combineSumPoints(
+                                    $data,
+                                    $this->fixTimeForGranularity($dataTmp, $this->granularity)
+                                );                                
 
-				foreach($dataTmp as $item) {
+				/*foreach($dataTmp as $item) {
 					$key = $this->arrayMultiSearch($item['time'], $data);
 					$data[$key] = $dataTmp[0];
-			    }
+                                }*/
 			}
 
 	  	} catch (Exception $e) {
@@ -206,4 +212,57 @@ class ClientPeriod implements ClientInterface {
 		}
 		return $sum;
 	}
+        
+    /**
+     * Fix time part for non-downsampled data
+     * 
+     * @param array $points
+     * @param string $granularity
+     * @return array
+     */
+    protected function fixTimeForGranularity($points, $granularity)
+    {
+        if($granularity != self::GRANULARITY_DAILY){
+            return $points;
+        }
+        foreach ($points as &$value) {
+            $dt = strtotime($value['time']);
+            $value['time'] = date("Y-m-d", $dt) . "T00:00:00Z";            
+        }
+        return $points;
+    }
+    
+    /**
+     * Combine downsampled and non-downsampled points
+     * 
+     * @param array $points1
+     * @param array $points2
+     * @return array
+     */
+    protected function combineSumPoints($points1, $points2)
+    {
+        $pointsCount = count($points1);
+        $currPoint = 0;
+        foreach ($points2 as $point2) {
+            $pointFound = false;
+            //leverage the fact that points are sorted and improve O(n^2)
+            while($currPoint < $pointsCount){
+                $point1 = $points1[$currPoint];
+                if($point1['time'] == $point2['time']){
+                    $points1[$currPoint]['sum'] += $point2['sum'];
+                    $currPoint++;
+                    $pointFound = true;
+                    break;
+                }                
+                $currPoint++;
+            }
+            //point not found in downsampled array, then just append
+            if(!$pointFound){
+                $points1[] = $point2;
+            }            
+        }
+        
+        return $points1;
+    }
+        
 }
