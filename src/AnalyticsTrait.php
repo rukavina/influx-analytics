@@ -2,7 +2,7 @@
 
 namespace Vorbind\InfluxAnalytics;
 
-use Vorbind\InfluxAnalytics\Exeception\AnalyticsException;
+use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
 
 /**
  * Class AnalyticsTrait
