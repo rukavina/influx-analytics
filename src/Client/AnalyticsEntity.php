@@ -16,18 +16,32 @@
  * and is licensed under the MIT license.
  */
 
-namespace Vorbind\InfluxAnalytics\Exception;
+namespace Vorbind\InfluxAnalytics\Client;
 
-use \Exception;
-
-class AnalyticsException extends Exception {
-
-    // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 0, Exception $previous = null) {
-        parent::__construct($message, $code, $previous);
-    }
-
-    public function __toString() {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+/**
+ * Analytics entity
+ */
+class AnalyticsEntity {
+    
+    /**
+     * @var string 
+     */
+    public $metric;
+    /**
+     * @var string 
+     */
+    public $rp;
+    /**
+     * @var array 
+     */
+    public $tags;
+    
+    
+    public function __construct($data) {
+        $this->rp = isset($data["rp"]) ? $data["rp"] : null;
+        $this->metric = isset($data["metric"]) ? $data["metric"] : null;
+        $this->tags = isset($data["tags"]) ? $data["tags"] : [];
     }
 }
+
+

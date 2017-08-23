@@ -16,18 +16,33 @@
  * and is licensed under the MIT license.
  */
 
-namespace Vorbind\InfluxAnalytics\Exception;
+namespace Vorbind\InfluxAnalytics\Client;
 
-use \Exception;
+/**
+ * Provides an API for analytics client
+ */
+interface AnalyticsClientInterface {
+    
+    /**
+     * Returns analytics data by time period for right metric
+     * 
+     * @param string $granularity
+     * @param string $startDt
+     * @param string $endDt
+     * @param string $timezone
+     * 
+     * @return array
+     */
+    public function getData($granularity, $startDt = null, $endDt = null, $timezone = 'UTC');
 
-class AnalyticsException extends Exception {
-
-    // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 0, Exception $previous = null) {
-        parent::__construct($message, $code, $previous);
-    }
-
-    public function __toString() {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
-    }
+    
+    /**
+     * Returns analytics total for right metric
+     * 
+     * @param string $startDate
+     * @param string $endDate
+     *
+     * @return int
+     */
+    public function getTotal($startDt = null, $endDt = null);
 }
