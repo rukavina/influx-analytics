@@ -1,0 +1,72 @@
+{
+  "db": {
+    "influx": {
+      "host": "localhost",
+      "port": 8186,
+      "database": "news",
+      "username": "admin",
+      "password": "adm1n"
+    },
+    "mysql": {
+      "host": "localhost",
+      "port": 3306,
+      "database": "news",
+      "username": "root",
+      "password": "root"
+    }
+  },
+  "metrics": {
+    "campaign": {
+      "influx": {
+        "tags": {
+          "service": null,
+          "utc": null,
+          "value": null
+        }
+      },
+      "mysql": {
+        "query": "SELECT news_campaign.created_dt utc, news_service.uuid service, count(*) value FROM news_campaign LEFT JOIN news_service ON news_campaign.service_id=news_service.id GROUP BY service, date(utc), hour(utc) ORDER BY news_campaign.id LIMIT %s OFFSET %s"
+      }
+    },
+    "sms": {
+      "influx": {
+        "tags": {
+          "service": null,
+          "campaign": null,
+          "type": null,
+          "status": null,
+          "utc": null,
+          "value": null
+        }
+      },
+      "mysql": {
+        "query": "SELECT news_message_sms.created_dt utc, news_service.uuid service, campaign_id campaign, message_type type, news_message_sms.status status, count(*) value FROM news_message_sms LEFT JOIN news_service ON news_message_sms.service_id=news_service.id GROUP BY service, campaign, type, status, date(utc), hour(utc) ORDER BY news_message_sms.id LIMIT %s OFFSET %s"
+      }
+    },
+    "contact": {
+      "influx": {
+        "tags": {
+          "service": null,
+          "list": null,
+          "utc": null,
+          "value": null
+        }
+      },
+      "mysql": {
+        "query": "SELECT cds_contact.created_dt utc, news_service.uuid service, list_id list, count(*) value FROM cds_contact LEFT JOIN news_service ON cds_contact.service_id=news_service.id GROUP BY service, list, date(utc), hour(utc) ORDER BY cds_contact.id LIMIT %s OFFSET %s"
+      }
+    },
+    "list": {
+      "influx": {
+        "tags": {
+          "service": null,
+          "utc": null,
+          "value": null
+        }
+      },
+      "mysql": {
+        "query": "SELECT cds_list.created_dt utc, news_service.uuid service, count(*) value FROM cds_list LEFT JOIN news_service ON cds_list.service_id=news_service.id GROUP BY service, date(utc), hour(utc) ORDER BY cds_list.id LIMIT %s OFFSET %s"
+      }
+    }
+  }
+}
