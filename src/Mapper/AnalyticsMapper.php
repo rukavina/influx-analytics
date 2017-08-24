@@ -69,11 +69,11 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
                 ->from($metric);
 
         if (isset($endDt)) {
-            $where[] = "time <= '" . $endDt . "' + $timeoffset";
+            $where[] = "time <= '" . $endDt . "'";
         }
         
         if (isset($startDt)) {
-            $where[] = "time >= '" . $startDt . "' + $timeoffset";
+            $where[] = "time >= '" . $startDt . "'";
         }
         
         foreach ($tags as $key => $val) {
@@ -82,15 +82,20 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
 
         $query->where($where);
         
-        if(!isset($granularity)) {
-            $query->groupBy('time(1d)');
-        } else if ($granularity == self::GRANULARITY_HOURLY) {
-            $query->groupBy('time(1h)');
+        error_log("Timeoffset1:" . $timeoffset);
+        
+        $groupBy = "time(1d,$timeoffset)";
+        if ($granularity == self::GRANULARITY_HOURLY) {
+            $groupBy = "time(1h,$timeoffset)";
+            //$query->groupBy("time(1h,-$timeoffset)");
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $query->groupBy('time(1d)');
+            $groupBy = "time(1d,$timeoffset)";
+            //$query->groupBy("time(1d,-$timeoffset)");
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $query->groupBy('time(1w)');
+            $groupBy = "time(1w,$timeoffset)";
+            //$query->groupBy("time(1w,-$timeoffset)");
         }
+        $query->groupBy($groupBy);
 
         return $query->getResultSet()->getPoints();
     }
@@ -119,7 +124,7 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
            return [];
         }
         
-        $where[] = "time >= '" . $lastHourDt . "' + $timeoffset AND time <= '" . $now  . "' + $timeoffset";
+        $where[] = "time >= '" . $lastHourDt . "' AND time <= '" . $now  . "'";
         
         foreach ($tags as $key => $val) {
             $where[] = "$key = '" . $val . "'";
@@ -130,15 +135,20 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
                 ->from($metric)
                 ->where($where);
 
-        if(!isset($granularity)) {
-            $query->groupBy('time(1d)');
-        } else if ($granularity == self::GRANULARITY_HOURLY) {
-            $query->groupBy('time(1h)');
+        error_log("Timeoffset1:" . $timeoffset);
+                
+        $groupBy = "time(1d,$timeoffset)";
+        if ($granularity == self::GRANULARITY_HOURLY) {
+            $groupBy = "time(1h,$timeoffset)";
+            //$query->groupBy("time(1h,-$timeoffset)");
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $query->groupBy('time(1d)');
+            $groupBy = "time(1d,$timeoffset)";
+            //$query->groupBy("time(1d,-$timeoffset)");
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $query->groupBy('time(1w)');
+            $groupBy = "time(1w,$timeoffset)";
+            //$query->groupBy("time(1w,-$timeoffset)");
         }
+        $query->groupBy($groupBy);
 
         return $query->getResultSet()->getPoints();        
     }

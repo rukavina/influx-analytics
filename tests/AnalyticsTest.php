@@ -28,6 +28,34 @@ class AnalyticsTest extends TestCase {
 //            print("Exception measurement not exist..");
 //        }
     }
+    
+    
+    public function providerCampaigns() {
+        $service = "d354fe67-87f2-4438-959f-65fde4622044";
+        $data = [];
+        
+        for($i=0;$i<24;$i++) {
+            $hh = $i < 10 ? "0".$i : $i;
+            $data[] = ["campaign", json_encode(['status' => 'finish', 'service' => $service]), 1, "2017-08-01 $hh:01:11"];
+        }
+        
+        for($i=0;$i<24;$i++) {
+            $hh = $i < 10 ? "0".$i : $i;
+            $data[] = ["campaign", json_encode(['status' => 'finish', 'service' => $service]), 10, "2017-08-02 $hh:01:11"];
+        }
+        
+        for($i=0;$i<24;$i++) {
+            $hh = $i < 10 ? "0".$i : $i;
+            $data[] = ["campaign", json_encode(['status' => 'finish', 'service' => $service]), 100, "2017-08-03 $hh:01:11"];
+        }
+    
+        for($i=0;$i<24;$i++) {
+            $hh = $i < 10 ? "0".$i : $i;
+            $data[] = ["campaign", json_encode(['status' => 'finish', 'service' => $service]), 1000, "2017-08-04 $hh:01:11"];
+        }
+        
+        return $data;
+    }
 
     public function providerData($data) {
         $service = "d354fe67-87f2-4438-959f-65fde4622044";
@@ -107,7 +135,9 @@ class AnalyticsTest extends TestCase {
     }
     
     /**
-     * @dataProvider providerData 
+     * //dataProvider providerData
+     * @dataProvider providerCampaigns
+     *  
      * @test
      */
     public function save($metric, $tags, $value, $utc, $rp = "years_5") {
@@ -133,8 +163,8 @@ class AnalyticsTest extends TestCase {
     }
 
     /**
-     * @dataProvider providerTotalData 
-     * @test
+     * //dataProvider providerTotalData 
+     * //test
      */
     public function getData($metric, $startDt, $endDt, $tags, $granularity) {
         $data = null;
@@ -160,8 +190,8 @@ class AnalyticsTest extends TestCase {
     }
 
     /**
-     * @dataProvider providerTotal 
-     * @test
+     * //dataProvider providerTotal 
+     * //test
      */
     public function getTotal($metrix, $startDt, $endDt, $tags) {
         $total = null;

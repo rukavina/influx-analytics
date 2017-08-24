@@ -40,7 +40,7 @@ trait AnalyticsTrait {
         $origin_dt = new \DateTime("now", $origin_dtz);
         $remote_dt = new \DateTime("now", $remote_dtz);
 
-        $offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+        $offset =  $remote_dtz->getOffset($remote_dt) - $origin_dtz->getOffset($origin_dt);
         return $offset / 3600 . $format;
     }
 
