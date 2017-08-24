@@ -16,18 +16,19 @@
  * and is licensed under the MIT license.
  */
 
-namespace Vorbind\InfluxAnalytics\Client;
+namespace Vorbind\InfluxAnalytics\Mapper;
 
 use InfluxDB\Database as InfluxDB;
-use Vorbind\InfluxAnalytics\Client\AnalyticsEntity;
-use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
+use InfluxDB\Point;
+use Vorbind\InfluxAnalytics\Mapper\AnalyticsMapperInterface;
 
-
-class AnalyticsClient implements AnalyticsClientInterface
-{
+/**
+ * Analytics mapper
+ */
+class AnalyticsMapper implements AnalyticsMapperInterface {
     
     use \Vorbind\InfluxAnalytics\AnalyticsTrait;
-    
+        
     CONST GRANULARITY_HOURLY = 'hourly';
     CONST GRANULARITY_DAILY = 'daily';
     CONST GRANULARITY_WEEKLY = 'weekly';
@@ -35,84 +36,37 @@ class AnalyticsClient implements AnalyticsClientInterface
     /**
      * @var InfluxDB
      */
-    protected $db;   
+    protected $db; 
     
-    /**
-     * @var AnalyticsEntity
-     */
-    protected $entity;
-        
-    public function __construct(InfluxDB $db, AnalyticsEntity $entity) {
+    public function __construct(InfluxDB $db) {
         $this->db = $db;
-        $this->entity = $entity;        
     }
     
-    /**
-     * Get analytics data in right time zone by period and granularity 
-     * 
-     * @param string $granularity
-     * @param string $startDt
-     * @param string $endDt
-     * @param string $timezone
-     */
-    public function getData($granularity = 'daily', $startDt = null, $endDt = '2100-12-01T00:00:00Z', $timezone = 'UTC') {
-        $points = [];
-        
-        if ( !isset($this->entity->tags["service"]) || null == $this->entity->metric ) {
-            throw new AnalyticsException("Analytics client getData faild, missing input data");
-        }
-
-        try {            
-            if($this->entity->rp) {
-                $pointsRp = $this->getRpPoints($granularity, $startDt, $endDt, $timezone);
-                $pointsCurrent = $this->getCurrentPoints($granularity, $endDt, $timezone);
-                
-                $points = $this->combineSumPoints(
-                                $pointsRp, $this->fixTimeForGranularity($pointsCurrent, $granularity)
-                );
-            }
-            return $points;
-            
-        } catch (Exception $e) {
-            throw new AnalyticsException("Analytics client period get data exception", 0, $e);
-        }        
-    }
-    
-    /**
-     * Returns analytics total for right metric
-     *
-     * @return int
-     */
-    public function getTotal($startDt = null, $endDt = null) {
-
-        if ( !isset($this->entity->tags["service"]) || null == $this->entity->metric ) {
-            throw new AnalyticsException("Get total missing input data.");
-        }
-
-        try {
-            return $this->getRpSum($startDt, $endDt) + $this->getCurrentSum($endDt);
-        } catch (Exception $e) {
-            throw new AnalyticsException("Analytics client get total exception", 0, $e);
-        }
-    }
-        
     /**
      * Get points from retention policy
      * 
+     * @param string $rp
+     * @param string $metric
+     * @param array $tags
      * @param string $granularity
      * @param string $startDt
      * @param string $endDt
      * @param string $timezone
      * @return array
      */
-    private function getRpPoints($granularity, $startDt, $endDt, $timezone) {
+    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone) {
+        
+        if (null == $rp || null == $metric) {
+            return [];
+        }
+        
         $timeoffset = $this->getTimezoneHourOffset($timezone);
         $where = [];
         
         $query = $this->db->getQueryBuilder()
-                ->retentionPolicy($this->entity->rp)
+                ->retentionPolicy($rp)
                 ->sum('value')
-                ->from($this->entity->metric);
+                ->from($metric);
 
         if (isset($endDt)) {
             $where[] = "time <= '" . $endDt . "' + $timeoffset";
@@ -122,7 +76,7 @@ class AnalyticsClient implements AnalyticsClientInterface
             $where[] = "time >= '" . $startDt . "' + $timeoffset";
         }
         
-        foreach ($this->entity->tags as $key => $val) {
+        foreach ($tags as $key => $val) {
             $where[] = "$key = '" . $val . "'";
         }
 
@@ -144,12 +98,17 @@ class AnalyticsClient implements AnalyticsClientInterface
     /**
      * Get points from default retention policy
      * 
+     * @param string $metric
+     * @param array $tags
      * @param string $granularity
      * @param string $endDt
      * @param string $timezone
      * @return array
      */
-    private function getCurrentPoints($granularity, $endDt, $timezone) {
+    public function getPoints($metric, $tags, $granularity, $endDt, $timezone) {
+        if ( null == $metric ) {
+            return [];
+        }
         $where = [];
 
         $timeoffset = $this->getTimezoneHourOffset($timezone);
@@ -162,13 +121,13 @@ class AnalyticsClient implements AnalyticsClientInterface
         
         $where[] = "time >= '" . $lastHourDt . "' + $timeoffset AND time <= '" . $now  . "' + $timeoffset";
         
-        foreach ($this->entity->tags as $key => $val) {
+        foreach ($tags as $key => $val) {
             $where[] = "$key = '" . $val . "'";
         }
         
         $query = $this->db->getQueryBuilder()
                 ->sum('value')
-                ->from($this->entity->metric)
+                ->from($metric)
                 ->where($where);
 
         if(!isset($granularity)) {
@@ -187,16 +146,19 @@ class AnalyticsClient implements AnalyticsClientInterface
     /**
      * Get total from retention policy
      * 
+     * @param string $rp
+     * @param string $metric
+     * @param array $tags
      * @param string $startDt
      * @param string $endDt
      * @return int
      */
-    private function getRpSum($startDt, $endDt) {
-        $where = [];
-        
-        if(!$this->entity->rp) {
+    public function getRpSum($rp, $metric, $tags, $startDt, $endDt) {
+        if (null == $rp || null == $metric) {
             return 0;
         }
+        
+        $where = [];
         
         if (!isset($endDt)) {
             $endDt = '2100-01-01T00:00:00Z';
@@ -206,15 +168,14 @@ class AnalyticsClient implements AnalyticsClientInterface
         if (isset($startDt)) {
             $where[] = "time >= '" . $startDt . "'";
         }
-        
-
-        foreach ($this->entity->tags as $key => $val) {
+    
+        foreach ($tags as $key => $val) {
             $where[] = "$key = '" . $val . "'";
         }
 
         $points = $this->db->getQueryBuilder()
-                ->retentionPolicy($this->entity->rp)
-                ->from($this->entity->metric)
+                ->retentionPolicy($rp)
+                ->from($metric)
                 ->where($where)
                 ->sum('value')
                 ->getResultSet()
@@ -225,11 +186,17 @@ class AnalyticsClient implements AnalyticsClientInterface
     
     /**
      * Get total from default retention policy
+     * 
+     * @param string $metric
+     * @param array $tags
      * @param string $endDt
-     * @param string $timezone
      * @return int
      */
-    private function getCurrentSum($endDt) {
+    public function getSum($metric, $tags, $endDt) {
+        if (null == $metric) {
+            return 0;
+        }
+        
         $lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
         $where = [];
         
@@ -243,68 +210,50 @@ class AnalyticsClient implements AnalyticsClientInterface
         
         $where[] = "time >= '" . $lastHourDt . "' AND time <= '" . $endDt . "'";
         
-        foreach ($this->entity->tags as $key => $val) {
+        foreach ($tags as $key => $val) {
             $where[] = "$key = '" . $val . "'";
         }
 
         $points = $this->db->getQueryBuilder()
-                ->from($this->entity->metric)
+                ->from($metric)
                 ->where($where)
                 ->sum('value')
                 ->getResultSet()
                 ->getPoints();
         
         return isset($points[0]) && isset($points[0]["sum"]) ? $points[0]["sum"] : 0;
-    }
+    } 
     
     /**
-     * Fix time part for non-downsampled data
-     * 
-     * @param array $points
-     * @param string $granularity
-     * @return array
+     * Save analytics
+     *     
+     * @param string $metric
+     * @param array $tags
+     * @param int $value
+     * @param string $date
+     * @param string $rp
+     * @return void
+     * @throws AnalyticsException
      */
-    private function fixTimeForGranularity($points, $granularity) {
-        if ($granularity != self::GRANULARITY_DAILY) {
-            return $points;
-        }
-        foreach ($points as &$value) {
-            $dt = strtotime($value['time']);
-            $value['time'] = date("Y-m-d", $dt) . "T00:00:00Z";
-        }
-        return $points;
-    }
+    public function save($metric, $tags = array(), $value = 1, $date = null, $rp = null) {
+        try {
+            $command = isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
+            // Time precision is in nanaoseconds
+            $timeNs = exec("date $command +%s%N"); 
+            $fields = array();
 
-    /**
-     * Combine downsampled and non-downsampled points
-     * 
-     * @param array $points1
-     * @param array $points2
-     * @return array
-     */
-    private function combineSumPoints($points1, $points2) {
-        $pointsCount = count($points1);
-        $currPoint = 0;
-        foreach ($points2 as $point2) {
-            $pointFound = false;
-            //leverage the fact that points are sorted and improve O(n^2)
-            while ($currPoint < $pointsCount) {
-                $point1 = $points1[$currPoint];
-                if ($point1['time'] == $point2['time']) {
-                    $points1[$currPoint]['sum'] += $point2['sum'];
-                    $currPoint++;
-                    $pointFound = true;
-                    break;
-                }
-                $currPoint++;
-            }
-            //point not found in downsampled array, then just append
-            if (!$pointFound) {
-                $points1[] = $point2;
-            }
+            $points = array(
+                new Point(
+                        $metric, 
+                        $value, 
+                        $tags, 
+                        $fields, 
+                        $timeNs
+                )
+            );
+            return $this->db->writePoints($points, InfluxDB::PRECISION_NANOSECONDS, $rp);
+        } catch (Exception $e) {
+            throw new AnalyticsException("Error saving analytics data", 0, $e);
         }
-
-        return $points1;
     }
-    
 }

@@ -15,16 +15,17 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  */
-namespace Vorbind\InfluxAnalytics;
+
+namespace Vorbind\InfluxAnalytics\Mapper;
 
 /**
- * Provides an API for analytics
+ * Provides an API for analytics mapper
  */
-interface AnalyticsInterface {
-
+interface AnalyticsMapperInterface {
+    
     /**
-     * Get analytics data in right time zone by period and granularity 
-     *  
+     * Get points from retention policy
+     * 
      * @param string $rp
      * @param string $metric
      * @param array $tags
@@ -32,14 +33,24 @@ interface AnalyticsInterface {
      * @param string $startDt
      * @param string $endDt
      * @param string $timezone
-     * @return int
-     * @throws AnalyticsException
+     * @return array
      */
-    public function getData($rp, $metric, $tags, $granularity, $startDt = null, $endDt = null, $timezone = 'UTC');
-
+    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone);
+     
+    /**
+     * Get points from default retention policy
+     * 
+     * @param string $metric
+     * @param array $tags
+     * @param string $granularity
+     * @param string $endDt
+     * @param string $timezone
+     * @return array
+     */
+    public function getPoints($metric, $tags, $granularity, $endDt, $timezone);
     
     /**
-     * Returns analytics total for right metric
+     * Get total from retention policy
      * 
      * @param string $rp
      * @param string $metric
@@ -47,19 +58,30 @@ interface AnalyticsInterface {
      * @param string $startDt
      * @param string $endDt
      * @return int
-     * @throws AnalyticsException
      */
-    public function getTotal($rp, $metric, $tags, $startDt = null, $endDt = null);
+    public function getRpSum($rp, $metric, $tags, $startDt, $endDt);
+   
+    /**
+     * Get total from default retention policy
+     * 
+     * @param string $metric
+     * @param array $tags
+     * @param string $endDt
+     * @return int
+     */
+    public function getSum($metric, $tags, $endDt);
     
     /**
      * Save analytics
-     * 
+     *     
      * @param string $metric
      * @param array $tags
      * @param int $value
      * @param string $date
      * @param string $rp
+     * @return void
      * @throws AnalyticsException
-     */   
-    public function save($metric, $tags, $value, $utc, $rp);
+     */
+    public function save($metric, $tags = array(), $value = 1, $date = null, $rp = null);
+    
 }

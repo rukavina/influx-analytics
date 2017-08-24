@@ -18,9 +18,8 @@
 
 namespace Vorbind\InfluxAnalytics;
 
-use InfluxDB\Database;
-use InfluxDB\Point;
-use Vorbind\InfluxAnalytics\Exeception\AnalyticsException;
+use Vorbind\InfluxAnalytics\Mapper\AnalyticsMapperInterface;
+use Vorbind\InfluxAnalytics\Exception\AnalyticsException;
 
 /**
  *  InfluxAnalytics
@@ -32,40 +31,132 @@ use Vorbind\InfluxAnalytics\Exeception\AnalyticsException;
  */
 class Analytics implements AnalyticsInterface {
 
-    use \Vorbind\InfluxAnalytics\AnalyticsTrait;
+    /*
+     * @var AnalyticsMapperInterface 
+     */
+    protected $mapper;
+    
+    
+    public function __construct(AnalyticsMapperInterface $mapper) {
+        $this->mapper = $mapper;
+    }
+    
+    /**
+     * Get analytics data in right time zone by period and granularity 
+     *  
+     * @param string $rp
+     * @param string $metric
+     * @param array $tags
+     * @param string $granularity
+     * @param string $startDt
+     * @param string $endDt
+     * @param string $timezone
+     * @return int
+     * @throws AnalyticsException
+     */
+    public function getData($rp, $metric, $tags, $granularity = 'daily', $startDt = null, $endDt = '2100-12-01T00:00:00Z', $timezone = 'UTC') {
+        $points = [];
+        try {            
+            $pointsRp = $this->mapper->getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone);
+            $pointsTmp = $this->mapper->getPoints($metric, $tags, $granularity, $endDt, $timezone);
 
+            if (count($pointsRp) > 0 || count($pointsTmp) > 0) {
+                $points = $this->combineSumPoints(
+                                $pointsRp, $this->fixTimeForGranularity($pointsTmp, $granularity)
+                );
+            }
+            return $points;
+        } catch (Exception $e) {
+            throw new AnalyticsException("Analytics client period get data exception", 0, $e);
+        }        
+    }
+    
+    /**
+     * Returns analytics total for right metric
+     * 
+     * @param string $rp
+     * @param string $metric
+     * @param array $tags
+     * @param string $startDt
+     * @param string $endDt
+     * @return int
+     * @throws AnalyticsException
+     */
+    public function getTotal($rp, $metric, $tags, $startDt = null, $endDt = null) {
+        try {
+            return $this->mapper->getRpSum($rp, $metric, $tags, $startDt, $endDt) + $this->mapper->getSum($metric, $tags, $endDt);
+        } catch (Exception $e) {
+            throw new AnalyticsException("Analytics client get total exception", 0, $e);
+        }
+    }
+      
     /**
      * Save analytics
-     *     
-     * @param InfluxDB\Database $db
+     * 
      * @param string $metric
      * @param array $tags
      * @param int $value
      * @param string $date
      * @param string $rp
-     * @return void
      * @throws AnalyticsException
      */
-    public function save($db, $metric, $tags = array(), $value = 1, $date = null, $rp = null) {
+    public function save($metric, $tags = array(), $value = 1, $date = null, $rp = null) {
         try {
-            $command = isset($date) ? " -d '" . $this->normalizeUTC($date) . "'" : "";
-            // Time precision is in nanaoseconds
-            $timeNs = exec("date $command +%s%N"); 
-            $fields = array();
-
-            $points = array(
-                new Point(
-                        $metric, 
-                        $value, 
-                        $tags, 
-                        $fields, 
-                        $timeNs
-                )
-            );
-            return $db->writePoints($points, Database::PRECISION_NANOSECONDS, $rp);
+            return $this->mapper->save($metric, $tags, $value, $date, $rp);
         } catch (Exception $e) {
-            throw new AnalyticsException("Error saving analytics data", 0, $e);
+            throw new AnalyticsException("Analytics client save exception", 0, $e);
+        }    
+    }  
+    
+    //------------- private methods -----------//
+    
+    /**
+     * Fix time part for non-downsampled data
+     * 
+     * @param array $points
+     * @param string $granularity
+     * @return array
+     */
+    private function fixTimeForGranularity($points, $granularity) {
+        if ($granularity != $this->mapper::GRANULARITY_DAILY) {
+            return $points;
         }
+        foreach ($points as &$value) {
+            $dt = strtotime($value['time']);
+            $value['time'] = date("Y-m-d", $dt) . "T00:00:00Z";
+        }
+        return $points;
     }
 
+    /**
+     * Combine downsampled and non-downsampled points
+     * 
+     * @param array $points1
+     * @param array $points2
+     * @return array
+     */
+    private function combineSumPoints($points1, $points2) {
+        $pointsCount = count($points1);
+        $currPoint = 0;
+        foreach ($points2 as $point2) {
+            $pointFound = false;
+            //leverage the fact that points are sorted and improve O(n^2)
+            while ($currPoint < $pointsCount) {
+                $point1 = $points1[$currPoint];
+                if ($point1['time'] == $point2['time']) {
+                    $points1[$currPoint]['sum'] += $point2['sum'];
+                    $currPoint++;
+                    $pointFound = true;
+                    break;
+                }
+                $currPoint++;
+            }
+            //point not found in downsampled array, then just append
+            if (!$pointFound) {
+                $points1[] = $point2;
+            }
+        }
+
+        return $points1;
+    }    
 }

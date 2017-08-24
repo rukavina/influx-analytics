@@ -8,8 +8,7 @@
 				<testsuite name="Unit Tests">
 					<directory>tests</directory>
 					<file>AnalyticsTest.php</file>
-					<file>AnalyticsClientTest.php</file>
-                                </testsuite>
+		                </testsuite>
 			</testsuites>
 
 			<filter>
