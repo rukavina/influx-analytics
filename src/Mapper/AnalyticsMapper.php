@@ -51,16 +51,16 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param string $granularity
      * @param string $startDt
      * @param string $endDt
-     * @param string $timezone
+     * @param string $timeoffset
      * @return array
      */
-    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone) {
+    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timeoffset) {
         
         if (null == $rp || null == $metric) {
             return [];
         }
         
-        $timeoffset = $this->getTimezoneHourOffset($timezone);
+        //$timeoffset = $this->getTimezoneHourOffset($timezone);
         $where = [];
         
         $query = $this->db->getQueryBuilder()
@@ -82,18 +82,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
 
         $query->where($where);
         
-        error_log("Timeoffset1:" . $timeoffset);
-        
         $groupBy = "time(1d,$timeoffset)";
         if ($granularity == self::GRANULARITY_HOURLY) {
-            $groupBy = "time(1h,$timeoffset)";
-            //$query->groupBy("time(1h,-$timeoffset)");
+            //timeoffset doesn't work hourly
+            $groupBy = "time(1h)";
         } else if ($granularity == self::GRANULARITY_DAILY) {
             $groupBy = "time(1d,$timeoffset)";
-            //$query->groupBy("time(1d,-$timeoffset)");
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
             $groupBy = "time(1w,$timeoffset)";
-            //$query->groupBy("time(1w,-$timeoffset)");
         }
         $query->groupBy($groupBy);
 
@@ -107,16 +103,16 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param array $tags
      * @param string $granularity
      * @param string $endDt
-     * @param string $timezone
+     * @param string $timeoffset
      * @return array
      */
-    public function getPoints($metric, $tags, $granularity, $endDt, $timezone) {
+    public function getPoints($metric, $tags, $granularity, $endDt, $timeoffset) {
         if ( null == $metric ) {
             return [];
         }
         $where = [];
 
-        $timeoffset = $this->getTimezoneHourOffset($timezone);
+        //$timeoffset = $this->getTimezoneHourOffset($timezone);
         $now = $this->normalizeUTC(date("Y-m-d H:i:s"));
         $lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
         
@@ -135,18 +131,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
                 ->from($metric)
                 ->where($where);
 
-        error_log("Timeoffset1:" . $timeoffset);
-                
         $groupBy = "time(1d,$timeoffset)";
         if ($granularity == self::GRANULARITY_HOURLY) {
-            $groupBy = "time(1h,$timeoffset)";
-            //$query->groupBy("time(1h,-$timeoffset)");
+            //timeoffset doesn't work hourly
+            $groupBy = "time(1h)";
         } else if ($granularity == self::GRANULARITY_DAILY) {
             $groupBy = "time(1d,$timeoffset)";
-            //$query->groupBy("time(1d,-$timeoffset)");
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
             $groupBy = "time(1w,$timeoffset)";
-            //$query->groupBy("time(1w,-$timeoffset)");
         }
         $query->groupBy($groupBy);
 

@@ -50,15 +50,15 @@ class Analytics implements AnalyticsInterface {
      * @param string $granularity
      * @param string $startDt
      * @param string $endDt
-     * @param string $timezone
+     * @param string $timeoffset
      * @return int
      * @throws AnalyticsException
      */
-    public function getData($rp, $metric, $tags, $granularity = 'daily', $startDt = null, $endDt = '2100-12-01T00:00:00Z', $timezone = 'UTC') {
+    public function getData($rp, $metric, $tags, $granularity = 'daily', $startDt = null, $endDt = '2100-12-01T00:00:00Z', $timeoffset = '0h') {
         $points = [];
         try {            
-            $pointsRp = $this->mapper->getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone);
-            $pointsTmp = $this->mapper->getPoints($metric, $tags, $granularity, $endDt, $timezone);
+            $pointsRp = $this->mapper->getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timeoffset);
+            $pointsTmp = $this->mapper->getPoints($metric, $tags, $granularity, $endDt, $timeoffset);
 
             if (count($pointsRp) > 0 || count($pointsTmp) > 0) {
                 $points = $this->combineSumPoints(

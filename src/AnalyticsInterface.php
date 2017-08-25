@@ -31,11 +31,11 @@ interface AnalyticsInterface {
      * @param string $granularity
      * @param string $startDt
      * @param string $endDt
-     * @param string $timezone
+     * @param string $timeoffset
      * @return int
      * @throws AnalyticsException
      */
-    public function getData($rp, $metric, $tags, $granularity, $startDt = null, $endDt = null, $timezone = 'UTC');
+    public function getData($rp, $metric, $tags, $granularity, $startDt = null, $endDt = null, $timeoffset = '0h');
 
     
     /**
