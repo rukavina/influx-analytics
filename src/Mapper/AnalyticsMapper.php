@@ -61,6 +61,8 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
         }
         
         //$timeoffset = $this->getTimezoneHourOffset($timezone);
+        $offset = '-' == $timeoffset[0] ? substr($timeoffset, 1) : '-'.$timeoffset;
+        
         $where = [];
         
         $query = $this->db->getQueryBuilder()
@@ -82,14 +84,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
 
         $query->where($where);
         
-        $groupBy = "time(1d,$timeoffset)";
+        $groupBy = "time(1d,$offset)";
         if ($granularity == self::GRANULARITY_HOURLY) {
             //timeoffset doesn't work hourly
             $groupBy = "time(1h)";
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $groupBy = "time(1d,$timeoffset)";
+            $groupBy = "time(1d,$offset)";
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $groupBy = "time(1w,$timeoffset)";
+            $groupBy = "time(1w,$offset)";
         }
         $query->groupBy($groupBy);
 
@@ -110,9 +112,12 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
         if ( null == $metric ) {
             return [];
         }
+        
+        //$timeoffset = $this->getTimezoneHourOffset($timezone);
+        $offset = '-' == $timeoffset[0] ? substr($timeoffset, 1) : '-'.$timeoffset;
+        
         $where = [];
 
-        //$timeoffset = $this->getTimezoneHourOffset($timezone);
         $now = $this->normalizeUTC(date("Y-m-d H:i:s"));
         $lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
         
@@ -131,14 +136,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
                 ->from($metric)
                 ->where($where);
 
-        $groupBy = "time(1d,$timeoffset)";
+        $groupBy = "time(1d,$offset)";
         if ($granularity == self::GRANULARITY_HOURLY) {
             //timeoffset doesn't work hourly
             $groupBy = "time(1h)";
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $groupBy = "time(1d,$timeoffset)";
+            $groupBy = "time(1d,$offset)";
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $groupBy = "time(1w,$timeoffset)";
+            $groupBy = "time(1w,$offset)";
         }
         $query->groupBy($groupBy);
 
