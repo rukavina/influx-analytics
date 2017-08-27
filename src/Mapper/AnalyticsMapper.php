@@ -51,17 +51,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param string $granularity
      * @param string $startDt
      * @param string $endDt
-     * @param string $timeoffset
+     * @param string $timezone
      * @return array
      */
-    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timeoffset) {
+    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone) {
         
         if (null == $rp || null == $metric) {
             return [];
         }
-        
-        //$timeoffset = $this->getTimezoneHourOffset($timezone);
-        $offset = '-' == $timeoffset[0] ? substr($timeoffset, 1) : '-'.$timeoffset;
         
         $where = [];
         
@@ -84,14 +81,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
 
         $query->where($where);
         
-        $groupBy = "time(1d,$offset)";
+        $groupBy = "time(1d) tz('" . $timezone . "')";
         if ($granularity == self::GRANULARITY_HOURLY) {
             //timeoffset doesn't work hourly
-            $groupBy = "time(1h)";
+            $groupBy = "time(1h) tz('" . $timezone . "')";
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $groupBy = "time(1d,$offset)";
+            $groupBy = "time(1d) tz('" . $timezone . "')";
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $groupBy = "time(1w,$offset)";
+            $groupBy = "time(1w) tz('" . $timezone . "')";
         }
         $query->groupBy($groupBy);
 
@@ -105,16 +102,13 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param array $tags
      * @param string $granularity
      * @param string $endDt
-     * @param string $timeoffset
+     * @param string $timezone
      * @return array
      */
-    public function getPoints($metric, $tags, $granularity, $endDt, $timeoffset) {
+    public function getPoints($metric, $tags, $granularity, $endDt, $timezone) {
         if ( null == $metric ) {
             return [];
         }
-        
-        //$timeoffset = $this->getTimezoneHourOffset($timezone);
-        $offset = '-' == $timeoffset[0] ? substr($timeoffset, 1) : '-'.$timeoffset;
         
         $where = [];
 
@@ -136,14 +130,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
                 ->from($metric)
                 ->where($where);
 
-        $groupBy = "time(1d,$offset)";
+        $groupBy = "time(1d) tz('" . $timezone . "')";
         if ($granularity == self::GRANULARITY_HOURLY) {
             //timeoffset doesn't work hourly
-            $groupBy = "time(1h)";
+            $groupBy = "time(1h) tz('" . $timezone . "')";
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $groupBy = "time(1d,$offset)";
+            $groupBy = "time(1d) tz('" . $timezone . "')";
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $groupBy = "time(1w,$offset)";
+            $groupBy = "time(1w) tz('" . $timezone . "')";
         }
         $query->groupBy($groupBy);
 
@@ -167,14 +161,14 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
         
         $where = [];
         
+        if (isset($startDt)) {
+            $where[] = "time >= '" . $startDt . "'";
+        }
+        
         if (!isset($endDt)) {
             $endDt = '2100-01-01T00:00:00Z';
         }
         $where[] = "time <= '" . $endDt . "'";
-        
-        if (isset($startDt)) {
-            $where[] = "time >= '" . $startDt . "'";
-        }
     
         foreach ($tags as $key => $val) {
             $where[] = "$key = '" . $val . "'";
@@ -204,7 +198,10 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
             return 0;
         }
         
-        $lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
+        $min = date('i');
+        $minutes = $min > 45 ? 45 : ( $min > 30 ? 30 : ( $min > 15 ? 15 : '00') );       
+        $lastHourDt = date("Y-m-d") . "T" . date('H') . ":$minutes:00Z";
+
         $where = [];
         
         if (!isset($endDt)) {

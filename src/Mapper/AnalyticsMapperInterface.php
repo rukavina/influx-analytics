@@ -32,10 +32,10 @@ interface AnalyticsMapperInterface {
      * @param string $granularity
      * @param string $startDt
      * @param string $endDt
-     * @param string $timeoffset
+     * @param string $timezone
      * @return array
      */
-    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timeoffset);
+    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone);
      
     /**
      * Get points from default retention policy
@@ -44,10 +44,10 @@ interface AnalyticsMapperInterface {
      * @param array $tags
      * @param string $granularity
      * @param string $endDt
-     * @param string $timeoffset
+     * @param string $timezone
      * @return array
      */
-    public function getPoints($metric, $tags, $granularity, $endDt, $timeoffset);
+    public function getPoints($metric, $tags, $granularity, $endDt, $timezone);
     
     /**
      * Get total from retention policy

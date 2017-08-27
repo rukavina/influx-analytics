@@ -50,15 +50,15 @@ class Analytics implements AnalyticsInterface {
      * @param string $granularity
      * @param string $startDt
      * @param string $endDt
-     * @param string $timeoffset
+     * @param string $timezone
      * @return int
      * @throws AnalyticsException
      */
-    public function getData($rp, $metric, $tags, $granularity = 'daily', $startDt = null, $endDt = '2100-12-01T00:00:00Z', $timeoffset = '0h') {
+    public function getData($rp, $metric, $tags, $granularity = 'daily', $startDt = null, $endDt = '2100-12-01T00:00:00Z', $timezone = 'UTC') {
         $points = [];
         try {            
-            $pointsRp = $this->mapper->getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timeoffset);
-            $pointsTmp = $this->mapper->getPoints($metric, $tags, $granularity, $endDt, $timeoffset);
+            $pointsRp = $this->mapper->getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone);
+            $pointsTmp = $this->mapper->getPoints($metric, $tags, $granularity, $endDt, $timezone);
 
             if (count($pointsRp) > 0 || count($pointsTmp) > 0) {
                 $points = $this->combineSumPoints(
@@ -84,7 +84,11 @@ class Analytics implements AnalyticsInterface {
      */
     public function getTotal($rp, $metric, $tags, $startDt = null, $endDt = null) {
         try {
-            return $this->mapper->getRpSum($rp, $metric, $tags, $startDt, $endDt) + $this->mapper->getSum($metric, $tags, $endDt);
+            $todayDt = date("Y-m-d") . "T00:00:00Z";
+            
+            return  $this->mapper->getRpSum('forever', $metric, $tags) +
+                    $this->mapper->getRpSum($rp, $metric, $tags, $todayDt) +
+                    $this->mapper->getSum($metric, $tags);
         } catch (Exception $e) {
             throw new AnalyticsException("Analytics client get total exception", 0, $e);
         }
