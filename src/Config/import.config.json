@@ -1,5 +1,5 @@
 {
-  "db": {
+  "dbs": {
     "influx": {
       "host": "localhost",
       "port": 8186,
@@ -20,12 +20,17 @@
       "influx": {
         "tags": {
           "service": null,
+          "status": null,
+          "type": null,
           "utc": null,
           "value": null
         }
       },
       "mysql": {
-        "query": "SELECT news_campaign.created_dt utc, news_service.uuid service, count(*) value FROM news_campaign LEFT JOIN news_service ON news_campaign.service_id=news_service.id GROUP BY service, date(utc), hour(utc) ORDER BY news_campaign.id LIMIT %s OFFSET %s"
+        "query": {
+          "years_5": "SELECT news_campaign.created_dt utc, SEC_TO_TIME(TRUNCATE(TIME_TO_SEC(news_campaign.created_dt)/(60*15),0)*(60*15)) reginterval, news_campaign.status status, news_campaign.campaign_type type, news_service.uuid service, count(*) value FROM news_campaign LEFT JOIN news_service ON news_campaign.service_id=news_service.id WHERE news_campaign.status!='deleted'  GROUP BY service, date(utc), reginterval ORDER BY news_campaign.id LIMIT %s OFFSET %s",
+          "forever": "SELECT news_campaign.created_dt utc, news_campaign.status status, news_campaign.campaign_type type, news_service.uuid service, count(*) value FROM news_campaign LEFT JOIN news_service ON news_campaign.service_id=news_service.id WHERE news_campaign.status!='deleted'  GROUP BY service, date(utc) ORDER BY news_campaign.id LIMIT %s OFFSET %s"
+        }
       }
     },
     "sms": {
@@ -40,7 +45,28 @@
         }
       },
       "mysql": {
-        "query": "SELECT news_message_sms.created_dt utc, news_service.uuid service, campaign_id campaign, message_type type, news_message_sms.status status, count(*) value FROM news_message_sms LEFT JOIN news_service ON news_message_sms.service_id=news_service.id GROUP BY service, campaign, type, status, date(utc), hour(utc) ORDER BY news_message_sms.id LIMIT %s OFFSET %s"
+        "query": {
+          "years_5": "SELECT news_message_sms.created_dt utc, SEC_TO_TIME(TRUNCATE(TIME_TO_SEC(news_message_sms.created_dt)/(60*15),0)*(60*15)) reginterval, news_service.uuid service, campaign_id campaign, message_type type, news_message_sms.status status, count(*) value FROM news_message_sms LEFT JOIN news_service ON news_message_sms.service_id=news_service.id GROUP BY service, campaign, type, status, date(utc), reginterval ORDER BY news_message_sms.id LIMIT %s OFFSET %s",
+          "forever": "SELECT news_message_sms.created_dt utc, news_service.uuid service, campaign_id campaign, message_type type, news_message_sms.status status, count(*) value FROM news_message_sms LEFT JOIN news_service ON news_message_sms.service_id=news_service.id GROUP BY service, campaign, type, status, date(utc) ORDER BY news_message_sms.id LIMIT %s OFFSET %s"
+        }
+      }
+    },
+    "dlr": {
+      "influx": {
+        "tags": {
+          "service": null,
+          "campaign": null,
+          "type": null,
+          "status": null,
+          "utc": null,
+          "value": null
+        }
+      },
+      "mysql": {
+        "query": {
+          "years_5": "SELECT news_message_sms.created_dt utc, SEC_TO_TIME(TRUNCATE(TIME_TO_SEC(news_message_sms.created_dt)/(60*15),0)*(60*15)) reginterval, news_service.uuid service, campaign_id campaign, message_type type, news_message_sms.status status, count(*) value FROM news_message_sms LEFT JOIN news_service ON news_message_sms.service_id=news_service.id WHERE news_message_sms.status IN ('delivered','dlr_error') GROUP BY service, campaign, type, status, date(utc), reginterval ORDER BY news_message_sms.id LIMIT %s OFFSET %s",
+          "forever": "SELECT news_message_sms.created_dt utc, news_service.uuid service, campaign_id campaign, message_type type, news_message_sms.status status, count(*) value FROM news_message_sms LEFT JOIN news_service ON news_message_sms.service_id=news_service.id WHERE news_message_sms.status IN ('delivered','dlr_error') GROUP BY service, campaign, type, status, date(utc) ORDER BY news_message_sms.id LIMIT %s OFFSET %s"
+        }
       }
     },
     "contact": {
@@ -53,19 +79,26 @@
         }
       },
       "mysql": {
-        "query": "SELECT cds_contact.created_dt utc, news_service.uuid service, list_id list, count(*) value FROM cds_contact LEFT JOIN news_service ON cds_contact.service_id=news_service.id GROUP BY service, list, date(utc), hour(utc) ORDER BY cds_contact.id LIMIT %s OFFSET %s"
+        "query": {
+          "years_5": "SELECT cds_contact.created_dt utc, SEC_TO_TIME(TRUNCATE(TIME_TO_SEC(cds_contact.created_dt)/(60*15),0)*(60*15)) reginterval, cds_contact.status status, news_service.uuid service, list_id list, count(*) value FROM cds_contact LEFT JOIN news_service ON cds_contact.service_id=news_service.id WHERE cds_contact.status='active' GROUP BY service, list, date(utc), reginterval ORDER BY cds_contact.id LIMIT %s OFFSET %s",
+          "forever": "SELECT cds_contact.created_dt utc, cds_contact.status status, news_service.uuid service, list_id list, count(*) value FROM cds_contact LEFT JOIN news_service ON cds_contact.service_id=news_service.id WHERE cds_contact.status='active' GROUP BY service, list, date(utc) ORDER BY cds_contact.id LIMIT %s OFFSET %s"
+        }
       }
     },
     "list": {
       "influx": {
         "tags": {
           "service": null,
+          "status": null,
           "utc": null,
           "value": null
         }
       },
       "mysql": {
-        "query": "SELECT cds_list.created_dt utc, news_service.uuid service, count(*) value FROM cds_list LEFT JOIN news_service ON cds_list.service_id=news_service.id GROUP BY service, date(utc), hour(utc) ORDER BY cds_list.id LIMIT %s OFFSET %s"
+        "query": {
+          "years_5": "SELECT cds_list.created_dt utc, SEC_TO_TIME(TRUNCATE(TIME_TO_SEC(cds_list.created_dt)/(60*15),0)*(60*15)) reginterval, cds_list.list_status status, news_service.uuid service, count(*) value FROM cds_list LEFT JOIN news_service ON cds_list.service_id=news_service.id WHERE cds_list.list_status='active' GROUP BY service, date(utc), reginterval ORDER BY cds_list.id LIMIT %s OFFSET %s",
+          "forever": "SELECT cds_list.created_dt utc, cds_list.list_status status, news_service.uuid service, count(*) value FROM cds_list LEFT JOIN news_service ON cds_list.service_id=news_service.id WHERE cds_list.list_status='active' GROUP BY service, date(utc) ORDER BY cds_list.id LIMIT %s OFFSET %s"
+        }
       }
     }
   }

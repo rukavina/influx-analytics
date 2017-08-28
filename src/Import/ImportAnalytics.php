@@ -59,11 +59,15 @@ class ImportAnalytics implements ImportAnalyticsInterface {
     public function execute() {
         try {
             $metrics = $this->reader->getMetricsConfig();
-            foreach ($metrics as $metric => $item) {                
-                if (!$this->isMetricValid($item)) {
+            foreach ($metrics as $metric => $config) {                
+                if (!$this->isMetricValid($config)) {
                     throw new Exception("Metric configuration is not valid!");
                 }
-                $this->importMetric($metric, $item);
+                
+                $rps = array_keys($config["mysql"]["query"]);
+                foreach($rps as $rp) {
+                    $this->importMetric($metric, $config, $rp);
+                }
             }
         } catch (Exception $e) {
             printf("Error importing data:" . $e->getMessage(), PHP_EOL);
@@ -76,11 +80,11 @@ class ImportAnalytics implements ImportAnalyticsInterface {
      * @param array $metric
      * @throws Exception
      */
-    protected function importMetric($name, $metric) {
+    protected function importMetric($metric, $config, $rp) {
         $offset = 0;
         $limit = 100;
         while (true) {          
-            $query = sprintf($metric["mysql"]["query"], $limit, $offset);
+            $query = sprintf($config["mysql"]["query"][$rp], $limit, $offset);
             $rows = $this->mapper->getRows($query);
 
             if (count($rows) <= 0) {
@@ -88,7 +92,7 @@ class ImportAnalytics implements ImportAnalyticsInterface {
             }
 
             foreach ($rows as $row) {
-                $tags = array_merge($metric["influx"]["tags"], $row);
+                $tags = array_intersect_key($row, $config["influx"]["tags"]);
                 if(!$this->areTagsValid($tags)) {
                     throw new Exception("Configuration of tags doesn't match column in select!");
                 }
@@ -99,7 +103,7 @@ class ImportAnalytics implements ImportAnalyticsInterface {
                 unset($tags["value"]);
                 unset($tags["utc"]);
                 
-                $this->analytics->save($name, $tags, intval($value), $utc, "years_5");
+                $this->analytics->save($metric, $tags, intval($value), $utc, $rp);
             }
             $offset += $limit;
             sleep(1);
