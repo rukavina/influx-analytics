@@ -77,12 +77,10 @@ class Analytics implements AnalyticsInterface {
      * @param string $rp
      * @param string $metric
      * @param array $tags
-     * @param string $startDt
-     * @param string $endDt
      * @return int
      * @throws AnalyticsException
      */
-    public function getTotal($rp, $metric, $tags, $startDt = null, $endDt = null) {
+    public function getTotal($rp, $metric, $tags) {
         try {
             $todayDt = date("Y-m-d") . "T00:00:00Z";
             
