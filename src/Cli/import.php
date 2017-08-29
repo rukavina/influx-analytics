@@ -23,7 +23,7 @@ if (count($argv) <= 1){
 
 try {
     
-    $now = newDate();
+    $now = gmdate("Y-m-d\TH:i:s\Z");
     
     $reader = new ImportConfigReader($options["config"]);
     $mysqlAdapter = new MysqlDatabaseAdapter($reader);

@@ -98,7 +98,8 @@ class ImportAnalytics implements ImportAnalyticsInterface {
             foreach ($rows as $row) {
                 $tags = array_intersect_key($row, $config["influx"]["tags"]);
                 if(!$this->areTagsValid($tags) || !$this->isUtcValid($tags["utc"], $now, $rp)) {
-                    continue;
+                    print("Utc[" . $tags["utc"] . "] is not valid, now[$now], rp[$rp]\n");
+                    break;
                 }
                 
                 $value = $tags["value"];
@@ -124,7 +125,7 @@ class ImportAnalytics implements ImportAnalyticsInterface {
      */
     protected function isUtcValid($utc, $now, $rp) {
         if( 'forever' == $rp) {
-            $nowDate = date('Y:m:d', strtotime($now));
+            $nowDate = date('Y-m-d', strtotime($now));
             if(strtotime($utc) >= strtotime($nowDate)) {
                 return false;
             }
@@ -132,7 +133,7 @@ class ImportAnalytics implements ImportAnalyticsInterface {
         if( 'years_5' == $rp) {
             $min = date('i', strtotime($now));
             $minutes = $min > 45 ? 45 : ( $min > 30 ? 30 : ( $min > 15 ? 15 : '00') );       
-            $nowLimit = date('Y:m:d', strtotime($now)) . "T" . date('H', strtotime($now)) . ":$minutes:00Z";
+            $nowLimit = date('Y-m-d', strtotime($now)) . "T" . date('H', strtotime($now)) . ":$minutes:00Z";
             if(strtotime($utc) >= strtotime($nowLimit)) {
                 return false;
             }

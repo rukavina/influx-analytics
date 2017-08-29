@@ -113,7 +113,10 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
         $where = [];
 
         $now = $this->normalizeUTC(date("Y-m-d H:i:s"));
-        $lastHourDt = date("Y-m-d") . "T" . date('H') . ":00:00Z";
+        
+        $min = intval(date('i'));
+        $minutes = $min > 45 ? 45 : ( $min > 30 ? 30 : ( $min > 15 ? 15 : '00') );       
+        $lastHourDt = date("Y-m-d") . "T" . date('H') . ":$minutes:00Z";
         
         if (strtotime($endDt) < strtotime($lastHourDt)) {
            return [];
@@ -139,7 +142,7 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
             $groupBy = "time(1w) tz('" . $timezone . "')";
         }
         $query->groupBy($groupBy);
-
+        
         return $query->getResultSet()->getPoints();        
     }
     
@@ -197,10 +200,10 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
             return 0;
         }
         
-        $min = date('i');
+        $min = intval(date('i'));
         $minutes = $min > 45 ? 45 : ( $min > 30 ? 30 : ( $min > 15 ? 15 : '00') );       
         $lastHourDt = date("Y-m-d") . "T" . date('H') . ":$minutes:00Z";
-
+  
         $where = [];
         
         if (!isset($endDt)) {
