@@ -22,6 +22,9 @@ if (count($argv) <= 1){
 }
 
 try {
+    
+    $now = newDate();
+    
     $reader = new ImportConfigReader($options["config"]);
     $mysqlAdapter = new MysqlDatabaseAdapter($reader);
     $influxAdapter = new InfluxDatabaseAdapter($reader);
@@ -30,7 +33,7 @@ try {
     $importMapper = new ImportMysqlMapper($mysqlAdapter->getDatabaseAdapter());
             
     $import = new ImportAnalytics($importMapper, $analytics, $reader);
-    $import->execute();
+    $import->execute($now);
       
     echo "\n\nFinish importing data in influxdb :)";
 } catch(Exception $e) {

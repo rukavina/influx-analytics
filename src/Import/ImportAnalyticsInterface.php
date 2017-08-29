@@ -26,6 +26,6 @@ interface ImportAnalyticsInterface {
     /**
      * Execute import
      */
-    public function execute(); 
+    public function execute($now); 
     	
 } 

@@ -125,7 +125,8 @@ class Analytics implements AnalyticsInterface {
         }
         foreach ($points as &$value) {
             $dt = strtotime($value['time']);
-            $value['time'] = date("Y-m-d", $dt) . "T00:00:00Z";
+            $offset = substr($value['time'], -6); // get timezone offset (+02:00, -04:00)
+            $value['time'] = date("Y-m-d", $dt) . "T00:00:00" . $offset;
         }
         return $points;
     }

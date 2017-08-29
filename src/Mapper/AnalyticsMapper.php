@@ -132,7 +132,6 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
 
         $groupBy = "time(1d) tz('" . $timezone . "')";
         if ($granularity == self::GRANULARITY_HOURLY) {
-            //timeoffset doesn't work hourly
             $groupBy = "time(1h) tz('" . $timezone . "')";
         } else if ($granularity == self::GRANULARITY_DAILY) {
             $groupBy = "time(1d) tz('" . $timezone . "')";

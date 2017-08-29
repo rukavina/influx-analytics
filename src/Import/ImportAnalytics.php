@@ -56,17 +56,19 @@ class ImportAnalytics implements ImportAnalyticsInterface {
     /**
      * Execute import
      */
-    public function execute() {
+    public function execute($now) {
         try {
             $metrics = $this->reader->getMetricsConfig();
             foreach ($metrics as $metric => $config) {                
                 if (!$this->isMetricValid($config)) {
+                    print("Metric configuration is not valid!");
                     throw new Exception("Metric configuration is not valid!");
                 }
                 
                 $rps = array_keys($config["mysql"]["query"]);
                 foreach($rps as $rp) {
-                    $this->importMetric($metric, $config, $rp);
+                    print("Import metric[$metric] for rp[$rp]\n");
+                    $this->importMetric($now, $metric, $config, $rp);
                 }
             }
         } catch (Exception $e) {
@@ -77,10 +79,12 @@ class ImportAnalytics implements ImportAnalyticsInterface {
     /**
      * Import metric
      * 
-     * @param array $metric
-     * @throws Exception
+     * @param string $now
+     * @param string $metric
+     * @param array $config
+     * @param string $rp
      */
-    protected function importMetric($metric, $config, $rp) {
+    protected function importMetric($now, $metric, $config, $rp) {
         $offset = 0;
         $limit = 100;
         while (true) {          
@@ -93,8 +97,8 @@ class ImportAnalytics implements ImportAnalyticsInterface {
 
             foreach ($rows as $row) {
                 $tags = array_intersect_key($row, $config["influx"]["tags"]);
-                if(!$this->areTagsValid($tags)) {
-                    throw new Exception("Configuration of tags doesn't match column in select!");
+                if(!$this->areTagsValid($tags) || !$this->isUtcValid($tags["utc"], $now, $rp)) {
+                    continue;
                 }
                 
                 $value = $tags["value"];
@@ -103,11 +107,37 @@ class ImportAnalytics implements ImportAnalyticsInterface {
                 unset($tags["value"]);
                 unset($tags["utc"]);
                 
-                $this->analytics->save($metric, $tags, intval($value), $utc, $rp);
+                $this->analytics->save($metric, $tags, intval($value), $utc, $rp);                
             }
             $offset += $limit;
-            sleep(1);
+            usleep(300000);
         }
+    }
+    
+    /**
+     * Is valid utc
+     * 
+     * @param string $utc
+     * @param string $now
+     * @param string $rp
+     * @return boolean
+     */
+    protected function isUtcValid($utc, $now, $rp) {
+        if( 'forever' == $rp) {
+            $nowDate = date('Y:m:d', strtotime($now));
+            if(strtotime($utc) >= strtotime($nowDate)) {
+                return false;
+            }
+        } 
+        if( 'years_5' == $rp) {
+            $min = date('i', strtotime($now));
+            $minutes = $min > 45 ? 45 : ( $min > 30 ? 30 : ( $min > 15 ? 15 : '00') );       
+            $nowLimit = date('Y:m:d', strtotime($now)) . "T" . date('H', strtotime($now)) . ":$minutes:00Z";
+            if(strtotime($utc) >= strtotime($nowLimit)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
