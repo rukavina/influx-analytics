@@ -54,7 +54,7 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param string $timezone
      * @return array
      */
-    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt, $endDt, $timezone) {
+    public function getRpPoints($rp, $metric, $tags, $granularity, $startDt = null, $endDt = null, $timezone = 'utc') {
         
         if (null == $rp || null == $metric) {
             return [];
@@ -105,7 +105,7 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param string $timezone
      * @return array
      */
-    public function getPoints($metric, $tags, $granularity, $endDt, $timezone) {
+    public function getPoints($metric, $tags, $granularity, $endDt, $timezone = 'utc') {
         if ( null == $metric ) {
             return [];
         }
@@ -156,7 +156,7 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param string $endDt
      * @return int
      */
-    public function getRpSum($rp, $metric, $tags, $startDt, $endDt) {
+    public function getRpSum($rp, $metric, $tags, $startDt = null, $endDt = null) {
         if (null == $rp || null == $metric) {
             return 0;
         }
@@ -195,7 +195,7 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
      * @param string $endDt
      * @return int
      */
-    public function getSum($metric, $tags, $endDt) {
+    public function getSum($metric, $tags, $endDt = null) {
         if (null == $metric) {
             return 0;
         }

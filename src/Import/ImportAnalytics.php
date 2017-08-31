@@ -99,16 +99,14 @@ class ImportAnalytics implements ImportAnalyticsInterface {
                 $tags = array_intersect_key($row, $config["influx"]["tags"]);
                 if(!$this->areTagsValid($tags) || !$this->isUtcValid($tags["utc"], $now, $rp)) {
                     print("Utc[" . $tags["utc"] . "] is not valid, now[$now], rp[$rp]\n");
-                    break;
+                } else {
+                    $value = $tags["value"];
+                    $utc = $tags["utc"];
+                    unset($tags["value"]);
+                    unset($tags["utc"]);
+                
+                    $this->analytics->save($metric, $tags, intval($value), $utc, $rp); 
                 }
-                
-                $value = $tags["value"];
-                $utc = $tags["utc"];
-                
-                unset($tags["value"]);
-                unset($tags["utc"]);
-                
-                $this->analytics->save($metric, $tags, intval($value), $utc, $rp);                
             }
             $offset += $limit;
             usleep(300000);
