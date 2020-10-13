@@ -68,27 +68,27 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
                 ->from($metric);
 
         if (isset($endDt)) {
-            $where[] = "time <= '" . $endDt . "'";
+            $where[] = "time <= '" . $this->escape($endDt) . "'";
         }
         
         if (isset($startDt)) {
-            $where[] = "time >= '" . $startDt . "'";
+            $where[] = "time >= '" . $this->escape($startDt) . "'";
         }
         
         foreach ($tags as $key => $val) {
-            $where[] = "$key = '" . $val . "'";
+            $where[] = "$key = '" . $this->escape($val) . "'";
         }
 
         $query->where($where);
         
-        $groupBy = "time(1d) tz('" . $timezone . "')";
+        $groupBy = "time(1d) tz('" . $this->escape($timezone) . "')";
         if ($granularity == self::GRANULARITY_HOURLY) {
             //timeoffset doesn't work hourly
-            $groupBy = "time(1h) tz('" . $timezone . "')";
+            $groupBy = "time(1h) tz('" . $this->escape($timezone) . "')";
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $groupBy = "time(1d) tz('" . $timezone . "')";
+            $groupBy = "time(1d) tz('" . $this->escape($timezone) . "')";
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $groupBy = "time(1w) tz('" . $timezone . "')";
+            $groupBy = "time(1w) tz('" . $this->escape($timezone) . "')";
         }
         $query->groupBy($groupBy);
 
@@ -122,10 +122,10 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
            return [];
         }
         
-        $where[] = "time >= '" . $lastHourDt . "' AND time <= '" . $now  . "'";
+        $where[] = "time >= '" . $this->escape($lastHourDt) . "' AND time <= '" . $this->escape($now)  . "'";
         
         foreach ($tags as $key => $val) {
-            $where[] = "$key = '" . $val . "'";
+            $where[] = "$key = '" . $this->escape($val) . "'";
         }
         
         $query = $this->db->getQueryBuilder()
@@ -133,13 +133,13 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
                 ->from($metric)
                 ->where($where);
 
-        $groupBy = "time(1d) tz('" . $timezone . "')";
+        $groupBy = "time(1d) tz('" . $this->escape($timezone) . "')";
         if ($granularity == self::GRANULARITY_HOURLY) {
-            $groupBy = "time(1h) tz('" . $timezone . "')";
+            $groupBy = "time(1h) tz('" . $this->escape($timezone) . "')";
         } else if ($granularity == self::GRANULARITY_DAILY) {
-            $groupBy = "time(1d) tz('" . $timezone . "')";
+            $groupBy = "time(1d) tz('" . $this->escape($timezone) . "')";
         } else if ($granularity == self::GRANULARITY_WEEKLY) {
-            $groupBy = "time(1w) tz('" . $timezone . "')";
+            $groupBy = "time(1w) tz('" . $this->escape($timezone) . "')";
         }
         $query->groupBy($groupBy);
         
@@ -164,16 +164,16 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
         $where = [];
         
         if (isset($startDt)) {
-            $where[] = "time >= '" . $startDt . "'";
+            $where[] = "time >= '" . $this->escape($startDt) . "'";
         }
         
         if (!isset($endDt)) {
             $endDt = '2100-01-01T00:00:00Z';
         }
-        $where[] = "time <= '" . $endDt . "'";
+        $where[] = "time <= '" . $this->escape($endDt) . "'";
     
         foreach ($tags as $key => $val) {
-            $where[] = "$key = '" . $val . "'";
+            $where[] = "$key = '" . $this->escape($val) . "'";
         }
 
         $points = $this->db->getQueryBuilder()
@@ -214,10 +214,10 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
            return 0;
         }
         
-        $where[] = "time >= '" . $lastHourDt . "' AND time <= '" . $endDt . "'";
+        $where[] = "time >= '" . $this->escape($lastHourDt) . "' AND time <= '" . $this->escape($endDt) . "'";
         
         foreach ($tags as $key => $val) {
-            $where[] = "$key = '" . $val . "'";
+            $where[] = "$key = '" . $this->escape($val) . "'";
         }
 
         $points = $this->db->getQueryBuilder()
@@ -261,5 +261,16 @@ class AnalyticsMapper implements AnalyticsMapperInterface {
         } catch (Exception $e) {
             throw new AnalyticsException("Error saving analytics data", 0, $e);
         }
+    }
+    
+    /**
+     * Add slashes to protect SQL injections
+     * 
+     * @param string $param
+     * @return string
+     */
+    private function escape($param)
+    {
+        return addslashes($param);
     }
 }
