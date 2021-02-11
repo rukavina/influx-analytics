@@ -20,6 +20,7 @@
 namespace Vorbind\InfluxAnalytics\Mapper;
 
 use \PDO;
+use \PDOStatement;
 use Exception;
 
 /**
@@ -51,5 +52,28 @@ class ImportMysqlMapper implements ImportMapperInterface
             return [];
         }
     }
-    
+
+    /**
+     * Creates a PDOStatement instance with scrollable cursors
+     * for the query from the config file.
+     *
+     * @param string $query A MySQL query string.
+     */
+    public function createStatementForScrollableCursor($query) {
+        $statement = $this->db->prepare($query, [
+            PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
+        ]);
+        $statement->execute();
+
+        return $statement;
+    }
+
+    /**
+     * Get row with scrollable cursor.
+     *
+     * @param PDOStatement $statement
+     */
+    public function getRowWithScrollableCursor($statement) {
+        return $statement->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT);
+    }
 }
