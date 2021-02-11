@@ -85,31 +85,21 @@ class ImportAnalytics implements ImportAnalyticsInterface {
      * @param string $rp
      */
     protected function importMetric($now, $metric, $config, $rp) {
-        $offset = 0;
-        $limit = 100;
-        while (true) {          
-            $query = sprintf($config["mysql"]["query"][$rp], $limit, $offset);
-            $rows = $this->mapper->getRows($query);
+        $query = $config['mysql']['query'][$rp];
+        $statement = $this->mapper->createStatementForScrollableCursor($query);
 
-            if (count($rows) <= 0) {
-                break;
-            }
+        while ($row = $this->mapper->getRowWithScrollableCursor($statement)) {
+            $tags = array_intersect_key($row, $config["influx"]["tags"]);
+            if(!$this->areTagsValid($tags) || !$this->isUtcValid($tags["utc"], $now, $rp)) {
+                print("Utc[" . $tags["utc"] . "] is not valid, now[$now], rp[$rp]\n");
+            } else {
+                $value = $tags["value"];
+                $utc = $tags["utc"];
+                unset($tags["value"]);
+                unset($tags["utc"]);
 
-            foreach ($rows as $row) {
-                $tags = array_intersect_key($row, $config["influx"]["tags"]);
-                if(!$this->areTagsValid($tags) || !$this->isUtcValid($tags["utc"], $now, $rp)) {
-                    print("Utc[" . $tags["utc"] . "] is not valid, now[$now], rp[$rp]\n");
-                } else {
-                    $value = $tags["value"];
-                    $utc = $tags["utc"];
-                    unset($tags["value"]);
-                    unset($tags["utc"]);
-                
-                    $this->analytics->save($metric, $tags, intval($value), $utc, $rp); 
-                }
+                $this->analytics->save($metric, $tags, intval($value), $utc, $rp);
             }
-            $offset += $limit;
-            usleep(300000);
         }
     }
     
