@@ -19,6 +19,8 @@
 
 namespace Vorbind\InfluxAnalytics\Mapper;
 
+use \PDOStatement;
+
 /**
  * Provides an API for analytics import
  */ 
@@ -31,5 +33,19 @@ interface ImportMapperInterface
      * @param string $query
      */
     public function getRows($query);
-    
+
+    /**
+     * Creates a PDOStatement instance with scrollable cursors
+     * for the query from the config file.
+     *
+     * @param string $query A MySQL query string.
+     */
+    public function createStatementForScrollableCursor($query);
+
+    /**
+     * Get row with scrollable cursor.
+     *
+     * @param PDOStatement $statement
+     */
+    public function getRowWithScrollableCursor($statement);
 }
